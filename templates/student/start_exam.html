@@ -1,85 +1,130 @@
 {% extends 'student/studentbase.html' %}
 {% block content %}
-{%load static%}
-
-<head>
-  <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-  <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
-  <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-
-
-</head>
+{% load static %}
 
 
 <div class="jumbotron my-4">
-
-  <form class="form" autocomplete="off" onsubmit="return saveAns()"  action="/student/calculate-marks" method="POST">
+  <form class="form" autocomplete="off" onsubmit="return saveAns()" action="/student/calculate-marks" method="POST">
     {% csrf_token %}
     <h2 style="text-align: center;">Course: {{course.course_name}}</h2>
-    {% for q in questions%}
-    <h3 class="text-danger">{{ forloop.counter }}. {{q.question}}</h3><h4 style="text-align: right;">[{{q.marks}} Marks]</h4>
-    
-        <input type="hidden" name="csrfmiddlewaretoken" value="C24rUotmdHawVQJL3KrqiWxvti8UffOFYUc8TRbZtLt36AVLdP3jbkzUVe3beRAa">
-        
-        
-          <div class="form-check mx-4">
-            <input class="form-check-input" type="radio" name="{{ forloop.counter }}" id="{{q.option1}}" value="Option1">
-            <label class="form-check-label" for="option1">
-              {{q.option1}}
-            </label>
-          </div>
+    {% for q in questions %}
+    <h3 class="text-danger">{{ forloop.counter }}. {{ q.question }}</h3>
+    <h4 style="text-align: right;">[{{ q.marks }} Marks]</h4>
 
-        
-          <div class="form-check mx-4">
-            <input class="form-check-input" type="radio" name="{{ forloop.counter }}" id="{{q.option2}}" value="Option2">
-            <label class="form-check-label" for="option2">
-              {{q.option2}}
-            </label>
-          </div>
+    <div class="form-check mx-4">
+      <input class="form-check-input" type="radio" name="{{ forloop.counter }}" id="{{ q.option1 }}" value="Option1">
+      <label class="form-check-label" for="option1">
+        {{ q.option1 }}
+      </label>
+    </div>
 
-        
-          <div class="form-check mx-4">
-            <input class="form-check-input" type="radio" name="{{ forloop.counter }}" id="{{q.option3}}" value="Option3">
-            <label class="form-check-label" for="option3">
-              {{q.option3}}
-            </label>
-          </div>
+    <div class="form-check mx-4">
+      <input class="form-check-input" type="radio" name="{{ forloop.counter }}" id="{{ q.option2 }}" value="Option2">
+      <label class="form-check-label" for="option2">
+        {{ q.option2 }}
+      </label>
+    </div>
 
-        
-          <div class="form-check mx-4">
-            <input class="form-check-input" type="radio" name="{{ forloop.counter }}" id="{{q.option4}}" value="Option4">
-            <label class="form-check-label" for="option4">
-              {{q.option4}}
-            </label>
-          </div>
+    <div class="form-check mx-4">
+      <input class="form-check-input" type="radio" name="{{ forloop.counter }}" id="{{ q.option3 }}" value="Option3">
+      <label class="form-check-label" for="option3">
+        {{ q.option3 }}
+      </label>
+    </div>
 
-        {% endfor %}
-        <input class="btn btn-success btn-lg" style="border-radius: 0%;"  type="submit" value="Submit Answers">  
-    </form>
+    <div class="form-check mx-4">
+      <input class="form-check-input" type="radio" name="{{ forloop.counter }}" id="{{ q.option4 }}" value="Option4">
+      <label class="form-check-label" for="option4">
+        {{ q.option4 }}
+      </label>
+    </div>
+    {% endfor %}
+    <input class="btn btn-success btn-lg" style="border-radius: 0%;" type="submit" value="Submit Answers">
+  </form>
+
+  <!-- Video feed for proctoring -->
+  <div class="proctoring-video">
+    <h4>Proctoring Feed:</h4>
+    <video id="video" width="640" height="480" autoplay></video>
+    <canvas id="canvas" width="640" height="480" style="display:none;"></canvas>
   </div>
+</div>
+<script>
+  async function startProctoring() {
+    try {
+      // Load the coco-ssd model asynchronously
+      const model = await cocoSsd.load();
+      console.log("Model loaded successfully!");
 
-<script> 
-    function saveAns(){  
+      // Access the user's webcam and display it in the video element
+      const video = document.getElementById('video');
+      const canvas = document.getElementById('canvas');
+      const context = canvas.getContext('2d');
 
-        var ele = document.getElementsByTagName('input'); 
-        for(i = 0; i < ele.length; i++) { 
-            if(ele[i].type="radio") { 
-                if(ele[i].checked){        
-                  setCookie(ele[i].name,ele[i].value,3)
-                }
-            } 
-        } 
-          
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      video.srcObject = stream;
+      video.play();
+
+      // Start processing video frames
+      processVideo(model, video, context, canvas);
+
+    } catch (err) {
+      console.log("Error: " + err);
+      alert("Could not start proctoring due to webcam or model loading issues.");
     }
-    
-    function setCookie(cname, cvalue, exdays) {
-  var d = new Date();
-  d.setTime(d.getTime() + (exdays*24*60*60*1000));
-  var expires = "expires="+ d.toUTCString();
-  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-}
+  }
 
-</script> 
+  async function processVideo(model, video, context, canvas) {
+    setInterval(async function() {
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const predictions = await model.detect(canvas); // Detect objects in the canvas
 
+      // Check if a person is detected
+      const personDetected = predictions.some(prediction => prediction.class === 'person');
+      if (!personDetected) {
+        alert("No person detected! Please stay in the frame.");
+      } else {
+        console.log("Person detected!");
+      }
+      
+      // Optionally, draw detection boxes on the video feed
+      drawDetections(predictions, context);
+    }, 500);  // Adjust the interval as necessary for real-time performance
+  }
+
+  function drawDetections(predictions, context) {
+    context.clearRect(0, 0, canvas.width, canvas.height); // Clear previous drawings
+    predictions.forEach(prediction => {
+      context.strokeStyle = 'red';
+      context.lineWidth = 2;
+      context.strokeRect(
+        prediction.bbox[0],
+        prediction.bbox[1],
+        prediction.bbox[2],
+        prediction.bbox[3]
+      );
+    });
+  }
+
+  function saveAns() {
+    var ele = document.getElementsByTagName('input');
+    for (i = 0; i < ele.length; i++) {
+      if (ele[i].type == "radio" && ele[i].checked) {
+        setCookie(ele[i].name, ele[i].value, 3);
+      }
+    }
+  }
+
+  function setCookie(cname, cvalue, exdays) {
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    var expires = "expires=" + d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+  }
+
+  // Start the proctoring process after the window is fully loaded
+  window.onload = startProctoring;
+</script>
+  
 <br><br><br><br><br><br>
 {% endblock content %}

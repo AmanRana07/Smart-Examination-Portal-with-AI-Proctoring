@@ -193,7 +193,6 @@ def start_exam_view(request, pk):
     except Exception as e:
         return render(request, "error_page.html", {"error_message": str(e)})
 
-
 def run_proctoring(session):
     # Load the YOLO model locally
     model_path = "yolov5"  # Replace with the actual path where you saved YOLOv5
