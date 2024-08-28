@@ -148,8 +148,36 @@
     document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
   }
 
-  // Start the proctoring process after the window is fully loaded
+// Start the proctoring process after the window is fully loaded
   window.onload = startProctoring;
+setTimeout(function(){
+  const draggable = document.getElementById("draggable");
+  let offsetX = 0, offsetY = 0, mouseX = 0, mouseY = 0;
+
+  draggable.addEventListener('mousedown', startDragging);
+},4000);
+  function startDragging(e) {
+    e.preventDefault();
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    document.addEventListener('mousemove', drag);
+    document.addEventListener('mouseup', stopDragging);
+  }
+
+  function drag(e) {
+    e.preventDefault();
+    offsetX = mouseX - e.clientX;
+    offsetY = mouseY - e.clientY;
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    draggable.style.top = (draggable.offsetTop - offsetY) + "px";
+    draggable.style.left = (draggable.offsetLeft - offsetX) + "px";
+  }
+
+  function stopDragging() {
+    document.removeEventListener('mousemove', drag);
+    document.removeEventListener('mouseup', stopDragging);
+  }
 </script>
 
 <br><br><br><br><br><br>
