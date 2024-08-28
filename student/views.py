@@ -16,7 +16,12 @@ from django.contrib.auth import logout
 from django.views.decorators.http import require_http_methods
 import os
 import threading
-
+import base64
+from django.shortcuts import render, redirect
+from django.core.files.base import ContentFile
+from django.contrib.auth.decorators import login_required
+from .models import StudentImage
+from django.core.exceptions import ObjectDoesNotExist
 
 # for showing signup/login button for student
 def studentclick_view(request):
@@ -82,7 +87,7 @@ def take_exam_view(request, pk):
     questions = QMODEL.Question.objects.all().filter(course=course)
     total_marks = 0
     for q in questions:
-        total_marks = total_marks + q.marks
+        total_marks += q.marks
 
     return render(
         request,
@@ -91,8 +96,10 @@ def take_exam_view(request, pk):
             "course": course,
             "total_questions": total_questions,
             "total_marks": total_marks,
+            "course_id": pk,  # Pass the course ID to the template
         },
     )
+
 
 
 # @login_required(login_url='studentlogin')
@@ -266,3 +273,36 @@ def log_suspicious_activity_view(request, session_id, activity_type, description
     log_suspicious_activity(session, activity_type, description)
 
     return redirect(reverse("start_exam", args=[session.course.id]))
+
+@login_required(login_url="studentlogin")
+@user_passes_test(is_student)
+def capture_image(request, course_id):
+    if request.method == 'POST':
+        image_data = request.POST.get('image_data')
+        format, imgstr = image_data.split(';base64,') 
+        ext = format.split('/')[-1] 
+        data = ContentFile(base64.b64decode(imgstr), name=f'{request.user.username}.{ext}')
+        
+        # Ensure course_id is retrieved correctly from the URL or cookies
+        if not course_id:
+            course_id = request.COOKIES.get("course_id")
+        
+        if not course_id:
+            # Handle the case where course_id is still None
+            return HttpResponseBadRequest("Course ID is missing.")
+
+        try:
+            # Check if an image already exists for the user
+            student_image = StudentImage.objects.get(user=request.user)
+            # If it exists, update the existing image
+            student_image.image = data
+            student_image.save()
+        except StudentImage.DoesNotExist:
+            # If it does not exist, create a new image entry
+            student_image = StudentImage(user=request.user, image=data)
+            student_image.save()
+
+        # Redirect to the take-exam view with the correct course_id
+        return redirect('take-exam', pk=course_id)
+
+    return render(request, 'student/capture_image.html', {"course_id": course_id})

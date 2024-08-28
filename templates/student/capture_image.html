@@ -1,0 +1,61 @@
+{% extends 'student/studentbase.html' %}
+{% block content %}
+{% load static %}
+
+<div class="container my-4">
+    <div class="jumbotron">
+        <h2 class="text-center">Capture Your Image</h2>
+        <div class="row justify-content-center">
+            <video id="video" autoplay></video>
+            <button id="capture" class="btn btn-primary ml-2">Capture Image</button>
+            <canvas id="canvas" width="320" height="240" style="display: none;"></canvas>
+            <div id="capture-success" class="capture-success ml-2" style="display: none;">Image captured successfully!</div>
+        </div>
+        <form id="image-form" method="POST" action="{% url 'capture-image' course_id %}">
+            {% csrf_token %}
+            <input type="hidden" name="image_data" id="image-data">
+            <button type="submit" class="btn btn-success mt-4" disabled id="submit-button">Submit Image</button>
+        </form>
+        <a class="btn btn-success btn-sm mt-2" style="border-radius:0px;display:none;" href="{% url 'take-exam' course_id %}">
+            <span class="glyphicon glyphicon-check"></span> Attend Exam
+        </a> 
+    </div>
+</div>
+
+<script>
+  const video = document.getElementById('video');
+  const canvas = document.getElementById('canvas');
+  const context = canvas.getContext('2d');
+  const captureButton = document.getElementById('capture');
+  const imageDataInput = document.getElementById('image-data');
+  const captureSuccess = document.getElementById('capture-success');
+  const submitButton = document.getElementById('submit-button');
+
+  // Access the webcam
+  navigator.mediaDevices.getUserMedia({ video: true })
+    .then(stream => {
+      video.srcObject = stream;
+    })
+    .catch(err => {
+      console.error("Error accessing webcam: " + err);
+      alert("Unable to access webcam. Please check your browser settings.");
+    });
+
+  // Capture the image from the video feed
+  captureButton.addEventListener('click', function () {
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const imageData = canvas.toDataURL('image/png'); // Convert the image to base64 format
+    imageDataInput.value = imageData; // Store the image data in a hidden input field
+
+    // Stop video stream after capture
+    const stream = video.srcObject;
+    const tracks = stream.getTracks();
+    tracks.forEach(track => track.stop());
+
+    // Show capture success message and enable submit button
+    captureSuccess.style.display = 'block';
+    submitButton.disabled = false;
+  });
+</script>
+
+{% endblock content %}

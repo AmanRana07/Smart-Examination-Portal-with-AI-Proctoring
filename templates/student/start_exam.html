@@ -2,53 +2,79 @@
 {% block content %}
 {% load static %}
 
+<style>
+  /* Ensure the main content has a margin so the proctoring feed doesn't overlap */
+  .main-content {
+    margin-top: 100px; /* Adjust the margin to ensure content is not overlapped */
+  }
 
-<div class="jumbotron my-4">
-  <form class="form" autocomplete="off" onsubmit="return saveAns()" action="/student/calculate-marks" method="POST">
-    {% csrf_token %}
-    <h2 style="text-align: center;">Course: {{course.course_name}}</h2>
-    {% for q in questions %}
-    <h3 class="text-danger">{{ forloop.counter }}. {{ q.question }}</h3>
-    <h4 style="text-align: right;">[{{ q.marks }} Marks]</h4>
+  /* Position the proctoring video feed below the navbar */
+  .proctoring-video {
+    position: fixed; /* Fixes the video feed in place */
+    top: 100px; /* Positions the video feed below the navbar */
+    right: 20px; /* Adjust the distance from the right */
+    z-index: 1000; /* Ensures the video feed is above other content */
+    background-color: white; /* Optional: gives the video feed a background */
+    padding: 10px; /* Optional: adds some padding around the video feed */
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* Optional: adds a shadow for better visibility */
+  }
 
-    <div class="form-check mx-4">
-      <input class="form-check-input" type="radio" name="{{ forloop.counter }}" id="{{ q.option1 }}" value="Option1">
-      <label class="form-check-label" for="option1">
-        {{ q.option1 }}
-      </label>
+  /* Adjust the video dimensions */
+  .proctoring-video video {
+    width: 240px; /* Adjust the width to be smaller */
+    height: 180px; /* Adjust the height to be smaller */
+  }
+</style>
+
+<div class="main-content">
+  <div class="jumbotron my-4">
+    <form class="form" autocomplete="off" onsubmit="return saveAns()" action="/student/calculate-marks" method="POST">
+      {% csrf_token %}
+      <h2 style="text-align: center;">Course: {{course.course_name}}</h2>
+      {% for q in questions %}
+      <h3 class="text-danger">{{ forloop.counter }}. {{ q.question }}</h3>
+      <h4 style="text-align: right;">[{{ q.marks }} Marks]</h4>
+
+      <div class="form-check mx-4">
+        <input class="form-check-input" type="radio" name="{{ forloop.counter }}" id="{{ q.option1 }}" value="Option1">
+        <label class="form-check-label" for="option1">
+          {{ q.option1 }}
+        </label>
+      </div>
+
+      <div class="form-check mx-4">
+        <input class="form-check-input" type="radio" name="{{ forloop.counter }}" id="{{ q.option2 }}" value="Option2">
+        <label class="form-check-label" for="option2">
+          {{ q.option2 }}
+        </label>
+      </div>
+
+      <div class="form-check mx-4">
+        <input class="form-check-input" type="radio" name="{{ forloop.counter }}" id="{{ q.option3 }}" value="Option3">
+        <label class="form-check-label" for="option3">
+          {{ q.option3 }}
+        </label>
+      </div>
+
+      <div class="form-check mx-4">
+        <input class="form-check-input" type="radio" name="{{ forloop.counter }}" id="{{ q.option4 }}" value="Option4">
+        <label class="form-check-label" for="option4">
+          {{ q.option4 }}
+        </label>
+      </div>
+      {% endfor %}
+      <input class="btn btn-success btn-lg" style="border-radius: 0%;" type="submit" value="Submit Answers">
+    </form>
+
+    <!-- Video feed for proctoring, now positioned below the navbar -->
+    <div class="proctoring-video">
+      <h4>Proctoring Feed:</h4>
+      <video id="video" autoplay></video>
+      <canvas id="canvas" style="display:none;"></canvas>
     </div>
-
-    <div class="form-check mx-4">
-      <input class="form-check-input" type="radio" name="{{ forloop.counter }}" id="{{ q.option2 }}" value="Option2">
-      <label class="form-check-label" for="option2">
-        {{ q.option2 }}
-      </label>
-    </div>
-
-    <div class="form-check mx-4">
-      <input class="form-check-input" type="radio" name="{{ forloop.counter }}" id="{{ q.option3 }}" value="Option3">
-      <label class="form-check-label" for="option3">
-        {{ q.option3 }}
-      </label>
-    </div>
-
-    <div class="form-check mx-4">
-      <input class="form-check-input" type="radio" name="{{ forloop.counter }}" id="{{ q.option4 }}" value="Option4">
-      <label class="form-check-label" for="option4">
-        {{ q.option4 }}
-      </label>
-    </div>
-    {% endfor %}
-    <input class="btn btn-success btn-lg" style="border-radius: 0%;" type="submit" value="Submit Answers">
-  </form>
-
-  <!-- Video feed for proctoring -->
-  <div class="proctoring-video">
-    <h4>Proctoring Feed:</h4>
-    <video id="video" width="640" height="480" autoplay></video>
-    <canvas id="canvas" width="640" height="480" style="display:none;"></canvas>
   </div>
 </div>
+
 <script>
   async function startProctoring() {
     try {
@@ -125,6 +151,6 @@
   // Start the proctoring process after the window is fully loaded
   window.onload = startProctoring;
 </script>
-  
+
 <br><br><br><br><br><br>
 {% endblock content %}

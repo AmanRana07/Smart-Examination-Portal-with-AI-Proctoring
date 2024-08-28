@@ -1,6 +1,6 @@
 {% extends 'student/studentbase.html' %}
 {% block content %}
-{%load static%}
+{% load static %}
 
 <head>
   <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
@@ -30,20 +30,22 @@
     <table class="table table-hover table-bordered" id="dev-table">
       <thead>
         <tr>
-
           <th>Exam Name</th>
-          
           <th>Action</th>
         </tr>
       </thead>
-      {% for t in courses %}
-      <tr>
-
-        <td> {{t.course_name}}</td>
-        
-        <td><a class="btn btn-success btn-sm" style="border-radius:0px;" href="{% url 'take-exam' t.id  %}"><span class="glyphicon glyphicon-check"></span> Attend Exam</a></td>
-      </tr>
-      {% endfor %}
+      <tbody>
+        {% for t in courses %}
+        <tr>
+          <td>{{ t.course_name }}</td>
+          <td>
+            <a class="btn btn-success btn-sm mt-2" href="{% url 'capture-image' t.id %}">
+              <span class="glyphicon glyphicon-camera"></span> Attend Exam
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
     </table>
   </div>
 </div>
