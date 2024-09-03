@@ -1,6 +1,8 @@
 from django.db import models
 
 from student.models import Student
+from django.contrib.auth.models import User
+
 class Course(models.Model):
    course_name = models.CharField(max_length=50)
    question_number = models.PositiveIntegerField()
@@ -33,9 +35,26 @@ class ExamSession(models.Model):
     end_time = models.DateTimeField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
     suspicious_activity_count = models.PositiveIntegerField(default=0)
+    cancellation_flag = models.BooleanField(default=False)
+    reload_detected = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Exam session for {self.student} in {self.course.course_name}"
+    
+    def cancel_exam(self):
+        self.is_active = False
+        self.cancellation_flag = True
+        self.end_time = timezone.now()
+        self.save()
+
+    def is_cancelled(self):
+        return self.cancellation_flag
+
+class ChatMessage(models.Model):
+    session = models.ForeignKey(ExamSession, on_delete=models.CASCADE, related_name='messages')
+    sender = models.ForeignKey(User, on_delete=models.CASCADE)
+    message = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)    
 
 class ProctoringEvent(models.Model):
     session = models.ForeignKey(ExamSession, on_delete=models.CASCADE)
@@ -45,6 +64,8 @@ class ProctoringEvent(models.Model):
 
     def __str__(self):
         return f"Proctoring Event: {self.event_type} at {self.timestamp} for session {self.session}"
+    
+    
 
 class SuspiciousActivity(models.Model):
     session = models.ForeignKey(ExamSession, on_delete=models.CASCADE)

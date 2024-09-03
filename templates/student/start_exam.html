@@ -22,6 +22,96 @@
     width: 240px;
     height: 180px;
   }
+/* Chat Icon */
+.chat-icon {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background-color: #007bff;
+  color: white;
+  border-radius: 50%;
+  padding: 15px;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1001;
+  transition: transform 0.3s ease;
+}
+
+.chat-icon:hover {
+  transform: scale(1.1);
+}
+
+/* Chatbox */
+.chatbox {
+  position: fixed;
+  bottom: 100px;
+  right: 30px;
+  width: 300px;
+  max-width: 90%;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  transform: translateY(150%);
+  transition: transform 0.3s ease;
+  z-index: 1000;
+}
+
+.chatbox.open {
+  transform: translateY(0);
+}
+
+.chatbox-header {
+  background-color: #007bff;
+  color: white;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chatbox-content {
+  padding: 10px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.chatbox-footer {
+  padding: 10px;
+  border-top: 1px solid #ccc;
+  display: flex;
+  align-items: center;
+}
+
+.chatbox-footer textarea {
+  width: 100%;
+  resize: none;
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.chatbox-footer button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  margin-left: 5px;
+  cursor: pointer;
+}
+
+.chatbox-footer button:hover {
+  background-color: #0056b3;
+}
+
+/* Close Chat Button */
+.close-chat {
+  cursor: pointer;
+  font-size: 20px;
+}
+
 </style>
 
 <div class="main-content">
@@ -72,20 +162,65 @@
 
     <!-- Proctoring video feed -->
     <div class="proctoring-video">
-      <h4>Proctoring Feed:</h4>
-      <video id="video" autoplay></video>
-      <canvas id="canvas" style="display:none;"></canvas>
+      <video autoplay="true" id="videoElement"></video>
+      <canvas id="canvasElement" style="display:none;"></canvas>
     </div>
+    
+    
+    <div class="chat-container">
+      <div class="chat-icon" onclick="toggleChat()">
+        💬
+      </div>
+      <div class="chatbox" id="chatbox">
+        <div class="chatbox-header">
+          <h4>Chat with Proctor</h4>
+          <span class="close-chat" onclick="toggleChat()">×</span>
+        </div>
+        <div class="chatbox-content" id="chatMessages">
+          <!-- Messages will be loaded here -->
+        </div>
+        <div class="chatbox-footer">
+          <textarea id="chatMessageInput" placeholder="Type your message..."></textarea>
+          <button onclick="sendMessage()">Send</button>
+        </div>
+      </div>
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+
 <script>
+function toggleChat() {
+    var chatbox = document.getElementById("chatbox");
+    chatbox.classList.toggle("open");
+  }
+
+  var video = document.getElementById("videoElement");
+  var canvas = document.getElementById("canvasElement");
+  var context = canvas.getContext("2d");
+  var violationCount = 0; // Move violationCount to a broader scope
+  const maxViolations = 1; // Moved to a constant for better readability
+
   // Check and log the duration variable to ensure correct passing
   const examDuration = {{ duration }}; // Should be the duration in minutes
   console.log("Exam Duration:", examDuration);
 
   window.onload = function() {
-    startProctoring();
+    // startProctoring();
+
+    navigator.mediaDevices
+    .getUserMedia({ video: true })
+    .then(function (stream) {
+      video.srcObject = stream;
+    })
+    .catch(function (err) {
+      console.log("Something went wrong: " + err);
+    });
+
+  cocoSsd.load().then(model => {
+    processVideo(model, video, context, canvas);
+  });
 
     // Convert the exam duration from minutes to seconds
     const examTimeInSeconds = examDuration * 60;
@@ -123,58 +258,85 @@
   }
   
 
-  async function startProctoring() {
-    try {
-      const model = await cocoSsd.load();
-      console.log("Model loaded successfully!");
+  // async function startProctoring() {
+  //   try {
+  //     const model = await cocoSsd.load();
+  //     console.log("Model loaded successfully!");
 
-      const video = document.getElementById('video');
-      const canvas = document.getElementById('canvas');
-      const context = canvas.getContext('2d');
+  //     const video = document.getElementById('video');
+  //     const canvas = document.getElementById('canvas');
+  //     const context = canvas.getContext('2d');
 
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      video.srcObject = stream;
-      video.play();
+  //     const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+  //     video.srcObject = stream;
+  //     video.play();
 
-      processVideo(model, video, context, canvas);
-    } catch (err) {
-      console.error("Error starting proctoring:", err);
-      alert("Could not start proctoring due to webcam or model loading issues.");
-    }
-  }
+  //     processVideo(model, video, context, canvas);
+  //   } catch (err) {
+  //     console.error("Error starting proctoring:", err);
+  //     alert("Could not start proctoring due to webcam or model loading issues.");
+  //   }
+  // }
 
-  async function processVideo(model, video, context, canvas) {
-    setInterval(async function() {
+  function processVideo(model, video, context, canvas) {
+    setInterval(async function () {
       context.drawImage(video, 0, 0, canvas.width, canvas.height);
       const predictions = await model.detect(canvas);
-  
-      const personDetected = predictions.some(prediction => prediction.class === 'person');
-      if (!personDetected) {
+
+      const personDetected = predictions.some(prediction => prediction.class === "person");
+      const mobileDetected = predictions.some(prediction => prediction.class === "cell phone");
+
+      if (!personDetected || mobileDetected) {
+        violationCount++;
+        let message = mobileDetected ? "Mobile phone detected!" : "No person detected!";
+        // alert(`Violation ${violationCount}: ${message}`);
         Swal.fire({
           icon: 'warning',
-          title: 'No Person Detected',
-          text: 'Please stay in the frame.',
+          title: message,
+          text: violationCount,
         });
-      } else {
-        console.log("Person detected!");
+
+        if (violationCount >= maxViolations) {
+          alert("Exam cancelled due to multiple violations.");
+          window.location.href = "{% url 'exam-cancellation-page' %}";
+          return;
+        }
       }
-  
+
       drawDetections(predictions, context);
-    }, 500);
+      captureImageForComparison(canvas.toDataURL());
+    }, 15000);
   }
+
+  // async function processVideo(model, video, context, canvas) {
+  //   setInterval(async function() {
+  //     context.drawImage(video, 0, 0, canvas.width, canvas.height);
+  //     const predictions = await model.detect(canvas);
+  
+  //     const personDetected = predictions.some(prediction => prediction.class === 'person');
+  //     if (!personDetected) {
+  //       Swal.fire({
+  //         icon: 'warning',
+  //         title: 'No Person Detected',
+  //         text: 'Please stay in the frame.',
+  //       });
+  //     } else {
+  //       console.log("Person detected!");
+  //     }
+  
+  //     drawDetections(predictions, context);
+  //   }, 500);
+  // }
   
 
   function drawDetections(predictions, context) {
-    context.clearRect(0, 0, canvas.width, canvas.height);
     predictions.forEach(prediction => {
-      context.strokeStyle = 'red';
-      context.lineWidth = 2;
-      context.strokeRect(
-        prediction.bbox[0],
-        prediction.bbox[1],
-        prediction.bbox[2],
-        prediction.bbox[3]
-      );
+      context.strokeStyle = "#00FF00";
+      context.lineWidth = 4;
+      context.strokeRect(...prediction.bbox);
+      context.font = "18px Arial";
+      context.fillStyle = "#00FF00";
+      context.fillText(prediction.class, prediction.bbox[0], prediction.bbox[1] > 10 ? prediction.bbox[1] - 5 : 10);
     });
   }
 
@@ -193,6 +355,88 @@
     var expires = "expires=" + d.toUTCString();
     document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
   }
+
+  function captureImageForComparison(imageData) {
+    $.ajax({
+      url: "{% url 'compare_image' %}",
+      type: "POST",
+      data: {
+        image_data: imageData,
+        session_id: "{{ session.id }}",
+        csrfmiddlewaretoken: "{{ csrf_token }}",
+      },
+      success: function (response) {
+        console.log("AJAX response:", response); // Debugging statement
+        if (!response.match) {
+          violationCount++;
+          alert(`Violation ${violationCount}: Face mismatch detected!`);
+
+
+          if (violationCount >= maxViolations) {
+            if (response.cancellation_flag) {
+              alert("Exam cancelled due to multiple violations.");
+              window.location.href = "{% url 'exam-cancellation-page' %}";
+              return;
+            }
+          }
+        }
+      },
+      error: function (xhr, status, error) {
+        console.log("Error comparing image:", error); // Debugging statement
+      },
+    });
+  }
+
+  window.onbeforeunload = function () {
+    return "Are you sure you want to leave the exam? This may result in the cancellation of your exam.";
+  };
+
+
+
+</script>
+
+<script>
+  var sessionId = "{{ session.id }}"; // Use the session ID for chat messages
+
+  function loadChatHistory() {
+    $.ajax({
+      url: "{% url 'get-chat-history' session.id %}",
+      method: "GET",
+      success: function (data) {
+        var chatMessages = $("#chatMessages");
+        chatMessages.empty();
+        data.forEach(function (message) {
+          chatMessages.append('<p><strong>' + message.sender + ':</strong> ' + message.message + ' <small>(' + message.timestamp + ')</small></p>');
+        });
+        chatMessages.scrollTop(chatMessages.prop("scrollHeight"));
+      }
+    });
+  }
+
+  function sendMessage() {
+    var message = $("#chatMessageInput").val();
+    if (message.trim() === "") return;
+
+    $.ajax({
+      url: "{% url 'send-message' %}",
+      method: "POST",
+      data: {
+        session_id: sessionId,
+        message: message,
+        csrfmiddlewaretoken: "{{ csrf_token }}",
+      },
+      success: function (response) {
+        $("#chatMessageInput").val("");
+        loadChatHistory();
+      }
+    });
+  }
+
+  // Load chat history when the page is ready
+  $(document).ready(function () {
+    loadChatHistory();
+    setInterval(loadChatHistory, 5000); // Refresh chat every 5 seconds
+  });
 </script>
 
 <br><br><br><br><br><br>

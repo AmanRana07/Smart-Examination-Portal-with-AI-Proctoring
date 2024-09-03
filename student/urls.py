@@ -29,4 +29,17 @@ urlpatterns = [
         views.log_suspicious_activity_view,
         name="log_suspicious_activity",
     ),
+    path(
+        "check_exam_status/<int:session_id>/",
+        views.check_exam_status,
+        name="check_exam_status",
+    ),
+    path("compare-image/", views.compare_image_view, name="compare_image"),
+    path('send-message/', views.send_message_view, name='send-message'),
+    path('get-chat-history/<int:session_id>/', views.get_chat_history_view, name='get-chat-history'),
+    path(
+        "exam-cancellation/",
+        views.exam_cancellation_view,
+        name="exam-cancellation-page",
+    ),
 ]
