@@ -15,12 +15,6 @@
     .jumbotron h1 {
       text-align: center;
     }
-     #draggable {
-    position: absolute;
-    /* cursor: move; */
-    cursor:grab;
-    z-index: 1000; /* Keeps it on top */
-  }
 
   </style>
 
@@ -40,11 +34,6 @@
       <a class="btn btn-success " href="studentlogin" style="border-radius: 0%;" role="button">Login Now</a>
     </p>
     <br><br><br><br><br><br>
-  </div>
-  <div class="proctoring-video" id="draggable">
-    <h4>Proctoring Feed:</h4>
-    <video id="video" width="640" height="480" autoplay></video>
-    <canvas id="canvas" width="640" height="480" style="display:none;"></canvas>
   </div>
  
   {% include "exam/footer.html" %}

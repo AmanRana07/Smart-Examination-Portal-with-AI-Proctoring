@@ -3,26 +3,24 @@
 {% load static %}
 
 <style>
-  /* Ensure the main content has a margin so the proctoring feed doesn't overlap */
+  /* Styling adjustments */
   .main-content {
-    margin-top: 100px; /* Adjust the margin to ensure content is not overlapped */
+    margin-top: 100px;
   }
 
-  /* Position the proctoring video feed below the navbar */
   .proctoring-video {
-    position: fixed; /* Fixes the video feed in place */
-    top: 100px; /* Positions the video feed below the navbar */
-    right: 20px; /* Adjust the distance from the right */
-    z-index: 1000; /* Ensures the video feed is above other content */
-    background-color: white; /* Optional: gives the video feed a background */
-    padding: 10px; /* Optional: adds some padding around the video feed */
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* Optional: adds a shadow for better visibility */
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    z-index: 1000;
+    background-color: white;
+    padding: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
   }
 
-  /* Adjust the video dimensions */
   .proctoring-video video {
-    width: 240px; /* Adjust the width to be smaller */
-    height: 180px; /* Adjust the height to be smaller */
+    width: 240px;
+    height: 180px;
   }
 </style>
 
@@ -30,7 +28,13 @@
   <div class="jumbotron my-4">
     <form class="form" autocomplete="off" onsubmit="return saveAns()" action="/student/calculate-marks" method="POST">
       {% csrf_token %}
-      <h2 style="text-align: center;">Course: {{course.course_name}}</h2>
+      <h2 style="text-align: center;">Course: {{ course.course_name }}</h2>
+
+      <!-- Timer Display -->
+      <div id="timer" style="text-align: center; font-size: 24px; margin-bottom: 20px;">
+        Time Remaining: <span id="time-remaining">Loading...</span>
+      </div>
+
       {% for q in questions %}
       <h3 class="text-danger">{{ forloop.counter }}. {{ q.question }}</h3>
       <h4 style="text-align: right;">[{{ q.marks }} Marks]</h4>
@@ -66,23 +70,64 @@
       <input class="btn btn-success btn-lg" style="border-radius: 0%;" type="submit" value="Submit Answers">
     </form>
 
-    <!-- Video feed for proctoring, now positioned below the navbar -->
-    <div class="proctoring-video" id="draggable">
+    <!-- Proctoring video feed -->
+    <div class="proctoring-video">
       <h4>Proctoring Feed:</h4>
-      <video id="video" autoplay style="transform: scaleX(-1);"></video>
+      <video id="video" autoplay></video>
       <canvas id="canvas" style="display:none;"></canvas>
     </div>
   </div>
 </div>
 
 <script>
+  // Check and log the duration variable to ensure correct passing
+  const examDuration = {{ duration }}; // Should be the duration in minutes
+  console.log("Exam Duration:", examDuration);
+
+  window.onload = function() {
+    startProctoring();
+
+    // Convert the exam duration from minutes to seconds
+    const examTimeInSeconds = examDuration * 60;
+    const display = document.getElementById('time-remaining');
+
+    // Start the timer with the calculated duration
+    startTimer(examTimeInSeconds, display);
+  };
+
+  function startTimer(duration, display) {
+    let timer = duration, minutes, seconds;
+    const interval = setInterval(function () {
+      minutes = parseInt(timer / 60, 10);
+      seconds = parseInt(timer % 60, 10);
+  
+      minutes = minutes < 10 ? "0" + minutes : minutes;
+      seconds = seconds < 10 ? "0" + seconds : seconds;
+  
+      display.textContent = minutes + ":" + seconds;
+  
+      // When the timer reaches zero, submit the form
+      if (--timer < 0) {
+        clearInterval(interval);
+        Swal.fire({
+          icon: 'info',
+          title: "Time's up!",
+          text: "Submitting your answers.",
+          timer: 2000,  // The alert will close automatically after 2 seconds
+          showConfirmButton: false
+        }).then(() => {
+          document.querySelector('form').submit();
+        });
+      }
+    }, 1000);
+  }
+  
+
   async function startProctoring() {
     try {
-      // Load the coco-ssd model asynchronously
       const model = await cocoSsd.load();
       console.log("Model loaded successfully!");
 
-      // Access the user's webcam and display it in the video element
       const video = document.getElementById('video');
       const canvas = document.getElementById('canvas');
       const context = canvas.getContext('2d');
@@ -91,11 +136,9 @@
       video.srcObject = stream;
       video.play();
 
-      // Start processing video frames
       processVideo(model, video, context, canvas);
-
     } catch (err) {
-      console.log("Error: " + err);
+      console.error("Error starting proctoring:", err);
       alert("Could not start proctoring due to webcam or model loading issues.");
     }
   }
@@ -103,23 +146,26 @@
   async function processVideo(model, video, context, canvas) {
     setInterval(async function() {
       context.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const predictions = await model.detect(canvas); // Detect objects in the canvas
-
-      // Check if a person is detected
+      const predictions = await model.detect(canvas);
+  
       const personDetected = predictions.some(prediction => prediction.class === 'person');
       if (!personDetected) {
-        alert("No person detected! Please stay in the frame.");
+        Swal.fire({
+          icon: 'warning',
+          title: 'No Person Detected',
+          text: 'Please stay in the frame.',
+        });
       } else {
         console.log("Person detected!");
       }
-      
-      // Optionally, draw detection boxes on the video feed
+  
       drawDetections(predictions, context);
-    }, 500);  // Adjust the interval as necessary for real-time performance
+    }, 500);
   }
+  
 
   function drawDetections(predictions, context) {
-    context.clearRect(0, 0, canvas.width, canvas.height); // Clear previous drawings
+    context.clearRect(0, 0, canvas.width, canvas.height);
     predictions.forEach(prediction => {
       context.strokeStyle = 'red';
       context.lineWidth = 2;
@@ -146,37 +192,6 @@
     d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
     var expires = "expires=" + d.toUTCString();
     document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-  }
-
-// Start the proctoring process after the window is fully loaded
-  window.onload = startProctoring;
-setTimeout(function(){
-  const draggable = document.getElementById("draggable");
-  let offsetX = 0, offsetY = 0, mouseX = 0, mouseY = 0;
-
-  draggable.addEventListener('mousedown', startDragging);
-},4000);
-  function startDragging(e) {
-    e.preventDefault();
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-    document.addEventListener('mousemove', drag);
-    document.addEventListener('mouseup', stopDragging);
-  }
-
-  function drag(e) {
-    e.preventDefault();
-    offsetX = mouseX - e.clientX;
-    offsetY = mouseY - e.clientY;
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-    draggable.style.top = (draggable.offsetTop - offsetY) + "px";
-    draggable.style.left = (draggable.offsetLeft - offsetX) + "px";
-  }
-
-  function stopDragging() {
-    document.removeEventListener('mousemove', drag);
-    document.removeEventListener('mouseup', stopDragging);
   }
 </script>
 

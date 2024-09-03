@@ -170,7 +170,7 @@ def start_exam_view(request, pk):
         course = get_object_or_404(QMODEL.Course, id=pk)
         questions = QMODEL.Question.objects.filter(course=course)
         student = get_object_or_404(models.Student, user_id=request.user.id)
-
+        
         # Start a new exam session for proctoring
         session = ExamSession.objects.create(
             student=student, course=course, start_time=timezone.now(), is_active=True
@@ -187,12 +187,16 @@ def start_exam_view(request, pk):
         proctoring_thread = threading.Thread(target=run_proctoring, args=(session,))
         proctoring_thread.start()
 
+        # Pass 'duration' to the template, ensuring JavaScript gets the right value
+        context = {
+            "course": course,
+            "questions": questions,
+            "session": session,
+            "duration": course.duration_minutes,  # Add the exam duration in minutes
+        }
+
         # Render the start exam page with context data
-        response = render(
-            request,
-            "student/start_exam.html",
-            {"course": course, "questions": questions, "session": session},
-        )
+        response = render(request, "student/start_exam.html", context)
         response.set_cookie("course_id", course.id)
         response.set_cookie("session_id", session.id)
         return response

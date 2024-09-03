@@ -16,7 +16,7 @@
       }
     
   </style>
-</head>
+</head>/
 <h2 style="text-align:center;">Add Course</h2>
 <form method="POST" autocomplete="off" style="margin:100px;margin-top: 0px;">
     {%csrf_token%}
@@ -29,6 +29,8 @@
 
       <label for="total_marks">Total Marks</label>
       {% render_field courseForm.total_marks class="form-control" placeholder="Example: 100" %}
+      <label for="duration_minutes">Duration (in minutes)</label>
+        {% render_field courseForm.duration_minutes class="form-control" placeholder="Example: 60" %}
     </div>
     
 

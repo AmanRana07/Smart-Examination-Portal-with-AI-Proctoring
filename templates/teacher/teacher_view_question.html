@@ -1,6 +1,6 @@
 {% extends 'teacher/teacherbase.html' %}
 {% block content %}
-{%load static%}
+{% load static %}
 
 <head>
   <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
@@ -21,6 +21,7 @@
     }
   </style>
 </head>
+
 <br><br>
 <div class="container">
   <div class="panel panel-primary">
@@ -30,23 +31,36 @@
     <table class="table table-hover table-bordered" id="dev-table">
       <thead>
         <tr>
-
           <th>Course</th>
-          <th>Total Question</th>
+          <th>Total Questions</th>
           <th>Total Marks</th>
+          {% comment %} <th>Duration (in minutes)</th> {% endcomment %}
           <th>Action</th>
         </tr>
       </thead>
-      {% for c in courses %}
-      <tr>
+      <tbody>
+        {% for c in courses %}
+        <tr>
+          <td>{{ c.course_name }}</td>
+          <td>{{ c.question_number }}</td>
+          <td>{{ c.total_marks }}</td>
+          {% comment %} <td>{{ c.duration_minutes }}</td> {% endcomment %}
+          <td>
 
-        <td> {{c.course_name}}</td>
-        <td>{{c.question_number}}</td>
-        <td>{{c.total_marks}}</td>
-        <td><a class="btn btn-primary btn-sm" style="border-radius: 0%;" href="{% url 'see-question' c.id  %}"><span class="glyphicon glyphicon-eye-open"></span> View Question</a></td>
-        
-      </tr>
-      {% endfor %}
+
+
+
+            <a class="btn btn-primary btn-sm" style="border-radius: 0%;" href="{% url 'see-question' c.id %}">
+              <span class="glyphicon glyphicon-eye-open"></span> View Question
+            </a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="5" style="text-align: center;">No courses available</td>
+        </tr>
+        {% endfor %}
+      </tbody>
     </table>
   </div>
 </div>

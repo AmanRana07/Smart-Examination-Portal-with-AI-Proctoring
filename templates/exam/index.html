@@ -2,30 +2,257 @@
 {% load static %}
 <html lang="en" dir="ltr">
 
-<style>
-  .jumbotron{
-    margin-bottom: 0px;
-  }
-</style>
+<head>
+    <style>
+        .jumbotron {
+            margin-bottom: 0px;
+        }
+
+        /* Chatbot Styles */
+        #chatbot-container {
+            position: fixed;
+            bottom: 75px;
+            right: 20px;
+            width: 350px;
+            max-height: 500px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: none; /* Hidden by default */
+            flex-direction: column;
+            z-index: 1000;
+        }
+
+        #chatbot-header {
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            position: relative; /* Ensure the close icon is positioned relative to this header */
+        }
+
+        #chatbot-close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px; /* Larger size for better visibility */
+            cursor: pointer;
+            color: white;
+            z-index: 1001; /* Ensure it's above other elements */
+        }
+
+        #chatbot-messages {
+            padding: 10px;
+            height: 350px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        #chatbot-input-container {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid #ddd;
+        }
+
+        #chatbot-input {
+            flex: 1;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        #chatbot-send {
+            margin-left: 5px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #chatbot-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            z-index: 1001;
+        }
+
+        #chatbot-toggle-icon {
+            display: inline-block;
+        }
+
+        .cross-icon {
+            font-size: 24px; /* Ensure the cross icon is large enough */
+            color: white; /* White color for contrast */
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
 <body>
-  {% include "exam/navbar.html" %}
-<br>
-<section id="section-jumbotron" class="jumbotron jumbotron-fluid d-flex justify-content-center align-items-center">
-  <div class="container text-center">
-    <h2 class="display-3 text-info">Online Examination System</h2>
-    <p class="display-4 d-none d-sm-block">Attend your examinations online!</p>
-    <p class="lead">Sign Up now to start your first online examination</p>
+    {% include "exam/navbar.html" %}
+    <br>
+    <section id="section-jumbotron" class="jumbotron jumbotron-fluid d-flex justify-content-center align-items-center">
+        <div class="container text-center">
+            <h2 class="display-3 text-info">TestMate</h2>
+            <p class="display-4 d-none d-sm-block">Attend your examinations online!</p>
+            <p class="lead">Sign up now to give your first online examination</p>
 
-  
-    <p><strong> Start Your Journey Here:</strong></p>
-    <a href="/student/studentsignup" class="btn btn-lg btn-info" style="padding-right: 35px; border-radius: 0%;"><i class="fa fa-graduation-cap" aria-hidden="true"></i> Sign Up as Student</a>
-    
-    <br><br><br>
-  </div>  
-</section>
-  {% include "exam/footer.html" %}
+            <p><strong> Start Your Journey Here:</strong></p>
+            <a href="/student/studentsignup" class="btn btn-lg btn-info"
+                style="padding-right: 35px; border-radius: 0%;"><i class="fa fa-graduation-cap"
+                    aria-hidden="true"></i> Sign Up as Student</a>
+
+            <br><br><br>
+        </div>
+    </section>
+    {% include "exam/footer.html" %}
+
+    <!-- Chatbot Container -->
+    <div id="chatbot-container">
+        <div id="chatbot-header">
+            Senpai
+            <span id="chatbot-close" onclick="closeChatbot()">×</span>
+        </div>
+        <div id="chatbot-messages"></div>
+        <div id="chatbot-input-container">
+            <input type="text" id="chatbot-input" placeholder="Type your message...">
+            <button id="chatbot-send" onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <!-- Chatbot Toggle Button -->
+    <button id="chatbot-toggle" onclick="toggleChatbot()">
+        <span id="chatbot-toggle-icon" class="cross-icon">💬</span>
+    </button>
+
+    <script>
 
 
+        let isFirstOpen = true; // Flag to check if it's the first open
+
+        // Toggle chatbot visibility and change icon
+        function toggleChatbot() {
+            const chatbotContainer = document.getElementById('chatbot-container');
+            const toggleIcon = document.getElementById('chatbot-toggle-icon');
+            if (chatbotContainer.style.display === 'none') {
+                chatbotContainer.style.display = 'flex';
+                toggleIcon.style.color = 'white'; 
+                toggleIcon.textContent = ''; // Change to cross icon
+
+                // Send welcome message if it's the first time opening
+                if (isFirstOpen) {
+                    isFirstOpen = false; // Set flag to false after first use
+
+                    // Send a request to get the welcome message
+                    fetch('/chatbot/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        },
+                        body: JSON.stringify({ message: 'start' }) // Trigger welcome message
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        displayMessage('Senpai', data.response);
+                    })
+                    .catch(error => {
+                        console.error('Fetch Error:', error);
+                    });
+                }
+            } else {
+                chatbotContainer.style.display = 'none';
+                toggleIcon.textContent = '💬'; // Change to chat icon
+            }
+        }
+
+        // Send a message to the chatbot
+        function sendMessage() {
+            const input = document.getElementById('chatbot-input');
+            const message = input.value.trim();
+            if (!message) return;
+
+            displayMessage('You', message);
+            input.value = '';
+
+            // Send the message to the server
+            fetch('/chatbot/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ message: message })
+            })
+            .then(response => response.json())
+            .then(data => {
+                displayMessage('Senpai', data.response);
+            })
+            .catch(error => {
+                console.error('Fetch Error:', error);
+            });
+        }
+
+        // Display a message in the chatbot
+        function displayMessage(sender, message) {
+            const messagesContainer = document.getElementById('chatbot-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.innerHTML = `<strong>${sender}:</strong> ${message}`;
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight; // Auto-scroll to the bottom
+        }
+
+        // Close the chatbot
+        function closeChatbot() {
+            document.getElementById('chatbot-container').style.display = 'none';
+            document.getElementById('chatbot-toggle-icon').textContent = '💬'; // Change back to chat icon
+        }
+
+        // Initialize chatbot
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('chatbot-container').style.display = 'none'; // Hide on load
+            
+            // Handle Enter key press in the chatbot input
+            document.getElementById('chatbot-input').addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') { // Check if Enter key was pressed
+                    e.preventDefault(); // Prevent default form submission
+                    sendMessage(); // Call sendMessage function
+                }
+            });
+        });
+
+        // Display welcome message when the chat window opens
+document.addEventListener('DOMContentLoaded', () => {
+    const chatWindow = document.getElementById('chat-window');
+    const messageContainer = document.createElement('div');
+    messageContainer.className = 'message bot-message';
+    messageContainer.textContent = 'Hello! I am Senpai. Welcome to TestMate 🥰! If you need any help, please ask!';
+    chatWindow.appendChild(messageContainer);
+});
+setInterval(function(){
+    if($('#chatbot-toggle-icon').is(':empty')){
+    $('#chatbot-toggle-icon').html('<i class="fa-solid fa-xmark"></i>')
+    }
+    },100)
+
+    </script>
 </body>
 
 </html>

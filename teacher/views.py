@@ -9,6 +9,9 @@ from datetime import date, timedelta
 from exam import models as QMODEL
 from student import models as SMODEL
 from exam import forms as QFORM
+from django.shortcuts import render, get_object_or_404
+
+
 
 
 #for showing signup/login button for teacher
@@ -122,3 +125,6 @@ def remove_question_view(request,pk):
     question=QMODEL.Question.objects.get(id=pk)
     question.delete()
     return HttpResponseRedirect('/teacher/teacher-view-question')
+
+
+

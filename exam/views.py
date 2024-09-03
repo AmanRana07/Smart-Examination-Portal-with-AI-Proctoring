@@ -13,6 +13,26 @@ from student import models as SMODEL
 from teacher import forms as TFORM
 from student import forms as SFORM
 from django.contrib.auth.models import User
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+import spacy
+from spellchecker import SpellChecker
+import Levenshtein
+from nltk.corpus import words
+
+
+
+
+
+# Load the spaCy model
+nlp = spacy.load('en_core_web_sm')
+
+# Initialize the spell checker
+spell = SpellChecker()
+
+eng = words.words()
+
 
 
 
@@ -294,3 +314,132 @@ def contactus_view(request):
     return render(request, 'exam/contactus.html', {'form':sub})
 
 
+
+
+
+
+# Correct spelling before processing the message
+def correct_spelling(user_input):
+    # Split the input into words
+    words = user_input.split()
+    # Correct each word; if correction returns None, keep the original word
+    corrected_words = [spell.correction(word) if spell.correction(word) else word for word in words]
+    # Join the corrected words back into a single string
+    return ' '.join(corrected_words)
+
+# Find the closest match to the word from a list using Levenshtein distance
+def find_closest_match(word, word_list):
+    # Calculate distances between the input word and each word in the list
+    distances = {w: Levenshtein.distance(word, w) for w in word_list}
+    # Find the word with the minimum distance
+    closest_word = min(distances, key=distances.get)
+    return closest_word
+
+# Determine intent based on the corrected message
+def get_intent(message):
+    # Correct spelling of the message first
+    corrected_message = correct_spelling(message)
+    print(f"Corrected Message: {corrected_message}")  # Debug statement
+
+    # Process the corrected message using the NLP model
+    doc = nlp(corrected_message.lower())
+
+    # Define a list of known keywords for intent detection
+    greetings = ['hello', 'hi', 'hii', 'hey', 'helloo', 'hellooo']
+
+    # Find the closest greeting word
+    closest_greeting = find_closest_match(corrected_message, greetings)
+    print(f"Closest Greeting: {closest_greeting}")  # Debug statement
+
+    # Check if the corrected message is close to any known greetings
+    if Levenshtein.distance(corrected_message, closest_greeting) <= 2:
+        return 'greeting'
+
+    # Check for specific keywords and patterns to identify intents
+    if any(token.text in greetings for token in doc):
+        return 'greeting'
+    elif any(token.lemma_ == 'login' for token in doc):
+        return 'login_info'
+    elif any(ent.label_ == 'DATE' or token.lemma_ in ['exam', 'schedule'] for ent in doc.ents for token in doc):
+        return 'exam_schedule'
+    elif 'format' in corrected_message and 'exam' in corrected_message:
+        return 'exam_format'
+    elif 'practice' in corrected_message and 'test' in corrected_message:
+        return 'practice_test'
+    elif any(token.lemma_ == 'proctor' for token in doc) or 'proctoring' in corrected_message:
+        return 'proctoring_info'
+    elif any(token.lemma_ in ['technical', 'issue', 'problem'] for token in doc):
+        return 'technical_assistance'
+    elif 'rule' in corrected_message or 'exam rules' in corrected_message:
+        return 'exam_rules'
+    elif 'profile' in corrected_message and any(token.lemma_ == 'update' for token in doc):
+        return 'profile_management'
+    elif any(token.lemma_ in ['result', 'score', 'marks'] for token in doc):
+        return 'exam_results'
+    elif any(token.lemma_ in ['prepare', 'study', 'tip'] for token in doc):
+        return 'exam_preparation'
+    elif 'contact' in corrected_message or 'support' in corrected_message:
+        return 'contact_support'
+    elif 'room' in corrected_message and 'setup' in corrected_message or 'exam environment' in corrected_message:
+        return 'exam_environment'
+    elif any(token.lemma_ in ['cheat', 'violation', 'dishonest'] for token in doc):
+        return 'cheating_info'
+    elif any(token.lemma_ in ['eat', 'during', 'exam'] for token in doc):
+        return 'eating_during_exam'
+    elif any(token.text in ['exit', 'quit', 'goodbye', 'bye'] for token in doc):
+        return 'exit'
+    else:
+        # Default intent if no other intents are matched
+        return 'default'
+
+@csrf_exempt
+def chatbot_view(request):
+    if request.method == 'POST':
+        try:
+            # Load the user's message from the request body
+            data = json.loads(request.body)
+            user_message = data.get('message', '').lower()
+            print(f"User Message: {user_message}")  # Debug statement
+
+            # Check if it's the first interaction or if the message is a start/init signal
+            if not user_message or user_message in ['start', 'init']:
+                response_message = 'Hello! I am Senpai. Welcome to TestMate 🥰! If you need any help, please ask!'
+            else:
+                # Process the user's query and get the intent
+                intent = get_intent(user_message)
+                print(f"Detected Intent: {intent}")  # Debug statement
+
+                # Map intents to response messages
+                response_map = {
+                    'greeting': 'Hello! How can I assist you today?',
+                    'login_info': 'To login, please visit the login page and enter your credentials.',
+                    'exam_schedule': 'The next exam is scheduled for September 15, 2024.',
+                    'exam_format': 'The exam format will include multiple-choice questions.',
+                    'practice_test': 'Practice tests are available on the dashboard under the "Practice" section.',
+                    'proctoring_info': 'The proctoring system monitors your webcam and screen activity during the exam.',
+                    'technical_assistance': 'For technical issues, ensure your webcam and microphone are connected and functioning. Contact support if the issue persists.',
+                    'exam_rules': 'Please ensure you are alone in the room, and do not use any unauthorized materials.',
+                    'profile_management': 'You can update your profile information from the profile settings page.',
+                    'exam_results': 'Exam results will be available on the results page as soon as you finish the exam.',
+                    'exam_preparation': 'Check out our study tips section for effective exam preparation strategies.',
+                    'contact_support': 'For further assistance, please visit our Contact Us page.',
+                    'exam_environment': 'Ensure your room is well-lit and free from disturbances for a smooth exam experience.',
+                    'cheating_info': 'Cheating is strictly prohibited and can lead to disqualification from the exam.',
+                    'eating_during_exam': 'Eating during the exam is generally not allowed. Please refer to the exam guidelines or contact support for specific rules.',
+                    'exit': 'Goodbye! If you need further assistance, feel free to reach out again.',
+                    'default': "I'm not sure how to help with that. Please visit our Contact Us page for further assistance."
+                }
+
+                # Generate the response message based on the detected intent
+                response_message = response_map.get(intent, "I'm not sure how to help with that. Please visit our Contact Us page for further assistance.")
+                print(f"Response Message: {response_message}")  # Debug statement
+
+            # Return the response message as JSON
+            return JsonResponse({'response': response_message})
+
+        except json.JSONDecodeError:
+            # Handle JSON decoding errors
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
+    # Handle invalid request methods
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
