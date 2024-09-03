@@ -35,11 +35,12 @@
   cursor: pointer;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
   z-index: 1001;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .chat-icon:hover {
   transform: scale(1.1);
+  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.3);
 }
 
 /* Chatbox */
@@ -54,42 +55,49 @@
   box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
   overflow: hidden;
   transform: translateY(150%);
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, border-radius 0.3s ease;
   z-index: 1000;
 }
 
 .chatbox.open {
   transform: translateY(0);
+  border-radius: 15px;
 }
 
+/* Chatbox Header */
 .chatbox-header {
   background-color: #007bff;
   color: white;
-  padding: 10px;
+  padding: 12px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  border-bottom: 1px solid #0069d9;
 }
 
+/* Chatbox Content */
 .chatbox-content {
-  padding: 10px;
+  padding: 15px;
   max-height: 200px;
   overflow-y: auto;
 }
 
+/* Chatbox Footer */
 .chatbox-footer {
   padding: 10px;
   border-top: 1px solid #ccc;
   display: flex;
   align-items: center;
+  background-color: #f9f9f9;
 }
 
 .chatbox-footer textarea {
   width: 100%;
   resize: none;
-  padding: 5px;
+  padding: 8px;
   border-radius: 5px;
   border: 1px solid #ccc;
+  font-size: 14px;
 }
 
 .chatbox-footer button {
@@ -97,9 +105,10 @@
   color: white;
   border: none;
   border-radius: 5px;
-  padding: 5px 10px;
-  margin-left: 5px;
+  padding: 6px 12px;
+  margin-left: 8px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .chatbox-footer button:hover {
@@ -109,8 +118,15 @@
 /* Close Chat Button */
 .close-chat {
   cursor: pointer;
-  font-size: 20px;
+  font-size: 22px;
+  padding: 0 10px;
+  transition: color 0.3s ease;
 }
+
+.close-chat:hover {
+  color: #e0e0e0;
+}
+
 
 </style>
 
@@ -166,24 +182,25 @@
       <canvas id="canvasElement" style="display:none;"></canvas>
     </div>
     
-    
+  </div>
     <div class="chat-container">
       <div class="chat-icon" onclick="toggleChat()">
         💬
       </div>
-      <div class="chatbox" id="chatbox">
-        <div class="chatbox-header">
-          <h4>Chat with Proctor</h4>
-          <span class="close-chat" onclick="toggleChat()">×</span>
-        </div>
-        <div class="chatbox-content" id="chatMessages">
-          <!-- Messages will be loaded here -->
-        </div>
-        <div class="chatbox-footer">
-          <textarea id="chatMessageInput" placeholder="Type your message..."></textarea>
-          <button onclick="sendMessage()">Send</button>
-        </div>
-      </div>
+     
+  
+  <div class="chatbox" id="chatbox">
+    <div class="chatbox-header">
+      <h4>Chat with Proctor</h4>
+      <span class="close-chat" onclick="toggleChat()">×</span>
+    </div>
+    <div class="chatbox-content" id="chatMessages">
+      <!-- Messages will be loaded here -->
+    </div>
+    <div class="chatbox-footer">
+      <textarea id="chatMessageInput" placeholder="Type your message..."></textarea>
+      <button onclick="sendMessage()">Send</button>
+    </div>
   </div>
 </div>
 
@@ -464,10 +481,18 @@ function saveViolationToDB(violationMessage) {
     });
   }
 
-  // Load chat history when the page is ready
+  
   $(document).ready(function () {
     loadChatHistory();
-    setInterval(loadChatHistory, 5000); // Refresh chat every 5 seconds
+    setInterval(loadChatHistory, 5000); 
+
+    // Send message on Enter key press
+    $("#chatMessageInput").keydown(function (e) {
+        if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault(); 
+            sendMessage();
+        }
+    });
   });
 </script>
 
