@@ -4,4 +4,6 @@ django-widget-tweaks==1.4.8
 pytz==2020.1
 sqlparse==0.3.1
 Pillow
-
+pyspellchecker==0.7.2       
+python-Levenshtein==0.12.2  
+opencv-contrib-python==4.5.1.48  
