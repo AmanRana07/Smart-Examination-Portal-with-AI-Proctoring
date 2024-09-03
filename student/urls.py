@@ -35,11 +35,16 @@ urlpatterns = [
         name="check_exam_status",
     ),
     path("compare-image/", views.compare_image_view, name="compare_image"),
-    path('send-message/', views.send_message_view, name='send-message'),
-    path('get-chat-history/<int:session_id>/', views.get_chat_history_view, name='get-chat-history'),
+    path("send-message/", views.send_message_view, name="send-message"),
+    path(
+        "get-chat-history/<int:session_id>/",
+        views.get_chat_history_view,
+        name="get-chat-history",
+    ),
     path(
         "exam-cancellation/",
         views.exam_cancellation_view,
         name="exam-cancellation-page",
     ),
+    path("save-violation/", views.save_violation, name="save-violation"),
 ]

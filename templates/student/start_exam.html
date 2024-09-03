@@ -200,7 +200,7 @@ function toggleChat() {
   var canvas = document.getElementById("canvasElement");
   var context = canvas.getContext("2d");
   var violationCount = 0; // Move violationCount to a broader scope
-  const maxViolations = 1; // Moved to a constant for better readability
+  const maxViolations = 3; // Moved to a constant for better readability
 
   // Check and log the duration variable to ensure correct passing
   const examDuration = {{ duration }}; // Should be the duration in minutes
@@ -280,33 +280,40 @@ function toggleChat() {
 
   function processVideo(model, video, context, canvas) {
     setInterval(async function () {
-      context.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const predictions = await model.detect(canvas);
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const predictions = await model.detect(canvas);
 
-      const personDetected = predictions.some(prediction => prediction.class === "person");
-      const mobileDetected = predictions.some(prediction => prediction.class === "cell phone");
+        const personsDetected = predictions.filter(prediction => prediction.class === "person");
+        const mobileDetected = predictions.some(prediction => prediction.class === "cell phone");
 
-      if (!personDetected || mobileDetected) {
-        violationCount++;
-        let message = mobileDetected ? "Mobile phone detected!" : "No person detected!";
-        // alert(`Violation ${violationCount}: ${message}`);
-        Swal.fire({
-          icon: 'warning',
-          title: message,
-          text: violationCount,
-        });
+        let violationMessage = '';
 
-        if (violationCount >= maxViolations) {
-          alert("Exam cancelled due to multiple violations.");
-          window.location.href = "{% url 'exam-cancellation-page' %}";
-          return;
+        if (personsDetected.length !== 1 || mobileDetected) {
+            violationCount++;
+            violationMessage = mobileDetected ? "Mobile phone detected!" : 
+                              personsDetected.length === 0 ? "No person detected!" : 
+                              "Multiple faces detected!";
+
+            Swal.fire({
+                icon: 'warning',
+                title: violationMessage,
+                text: `Violation ${violationCount}`,
+            });
+
+            saveViolationToDB(violationMessage);
+
+            if (violationCount >= maxViolations) {
+                alert("Exam cancelled due to multiple violations.");
+                window.location.href = "{% url 'exam-cancellation-page' %}";
+                return;
+            }
         }
-      }
 
-      drawDetections(predictions, context);
-      captureImageForComparison(canvas.toDataURL());
+        drawDetections(predictions, context);
+        captureImageForComparison(canvas.toDataURL());
     }, 15000);
-  }
+}
+
 
   // async function processVideo(model, video, context, canvas) {
   //   setInterval(async function() {
@@ -358,38 +365,63 @@ function toggleChat() {
 
   function captureImageForComparison(imageData) {
     $.ajax({
-      url: "{% url 'compare_image' %}",
-      type: "POST",
-      data: {
-        image_data: imageData,
-        session_id: "{{ session.id }}",
-        csrfmiddlewaretoken: "{{ csrf_token }}",
-      },
-      success: function (response) {
-        console.log("AJAX response:", response); // Debugging statement
-        if (!response.match) {
-          violationCount++;
-          alert(`Violation ${violationCount}: Face mismatch detected!`);
+        url: "{% url 'compare_image' %}",
+        type: "POST",
+        data: {
+            image_data: imageData,
+            session_id: "{{ session.id }}",
+            csrfmiddlewaretoken: "{{ csrf_token }}",
+        },
+        success: function (response) {
+            console.log("AJAX response:", response); // Debugging statement
+            if (!response.match) {
+                violationCount++;
+                const violationMessage = "Face mismatch detected!";
+                
+                Swal.fire({
+                    icon: 'warning',
+                    title: `Violation ${violationCount}`,
+                    text: violationMessage,
+                });
 
+                saveViolationToDB(violationMessage);
 
-          if (violationCount >= maxViolations) {
-            if (response.cancellation_flag) {
-              alert("Exam cancelled due to multiple violations.");
-              window.location.href = "{% url 'exam-cancellation-page' %}";
-              return;
+                if (violationCount >= maxViolations) {
+                    alert("Exam cancelled due to multiple violations.");
+                    window.location.href = "{% url 'exam-cancellation-page' %}";
+                    return;
+                }
             }
-          }
-        }
-      },
-      error: function (xhr, status, error) {
-        console.log("Error comparing image:", error); // Debugging statement
-      },
+        },
+        error: function (xhr, status, error) {
+            console.log("Error comparing image:", error); // Debugging statement
+        },
     });
-  }
+}
 
-  window.onbeforeunload = function () {
-    return "Are you sure you want to leave the exam? This may result in the cancellation of your exam.";
-  };
+function saveViolationToDB(violationMessage) {
+    $.ajax({
+        url: "{% url 'save-violation' %}",
+        type: "POST",
+        data: JSON.stringify({
+            session_id: "{{ session.id }}",
+            violation_message: violationMessage,
+        }),
+        contentType: "application/json",
+        headers: {
+            "X-CSRFToken": "{{ csrf_token }}",
+        },
+        success: function (response) {
+            console.log("Violation saved successfully:", response);
+        },
+        error: function (xhr, status, error) {
+            console.log("Error saving violation:", error);
+        },
+    });
+}
+  // window.onbeforeunload = function () {
+  //   return "Are you sure you want to leave the exam? This may result in the cancellation of your exam.";
+  // };
 
 
 

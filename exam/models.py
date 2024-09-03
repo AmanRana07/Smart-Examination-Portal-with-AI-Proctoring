@@ -50,6 +50,16 @@ class ExamSession(models.Model):
     def is_cancelled(self):
         return self.cancellation_flag
 
+
+class Violation(models.Model):
+    session = models.ForeignKey(ExamSession, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    violation_message = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Violation for {self.user} during session {self.session} at {self.timestamp}"    
+
 class ChatMessage(models.Model):
     session = models.ForeignKey(ExamSession, on_delete=models.CASCADE, related_name='messages')
     sender = models.ForeignKey(User, on_delete=models.CASCADE)

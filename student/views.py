@@ -27,6 +27,7 @@ from django.http import JsonResponse
 import time
 import logging
 from django.views.decorators.csrf import csrf_exempt
+import json
 
 
 # for showing signup/login button for student
@@ -541,10 +542,10 @@ def capture_image(request, course_id):
             student_image.image = data
             student_image.save()
             session, created = ExamSession.objects.get_or_create(
-            student=request.user.student,
-            course_id=course_id,
-            defaults={"start_time": timezone.now(), "is_active": True},
-        )
+                student=request.user.student,
+                course_id=course_id,
+                defaults={"start_time": timezone.now(), "is_active": True},
+            )
         except StudentImage.DoesNotExist:
             student_image = StudentImage(user=request.user, image=data)
             student_image.save()
@@ -559,7 +560,6 @@ def capture_image(request, course_id):
             return HttpResponseBadRequest("Exam session does not exist.")
 
         # Create or retrieve the exam session for the course
-        
 
         response = redirect("take-exam", pk=course_id)
         response.set_cookie("session_id", session.id)
@@ -644,3 +644,20 @@ def get_chat_history_view(request, session_id):
     ]
 
     return JsonResponse(chat_history, safe=False)
+
+
+@csrf_exempt
+def save_violation(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        session_id = data.get("session_id")
+        violation_message = data.get("violation_message")
+
+        Violation.objects.create(
+            session_id=session_id,
+            user=request.user,
+            violation_message=violation_message,
+        )
+
+        return JsonResponse({"status": "success"})
+    return JsonResponse({"status": "failed"}, status=400)
