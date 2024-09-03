@@ -541,15 +541,15 @@ def capture_image(request, course_id):
             student_image = StudentImage.objects.get(user=request.user)
             student_image.image = data
             student_image.save()
-            session, created = ExamSession.objects.get_or_create(
-                student=request.user.student,
-                course_id=course_id,
-                defaults={"start_time": timezone.now(), "is_active": True},
-            )
+
         except StudentImage.DoesNotExist:
             student_image = StudentImage(user=request.user, image=data)
             student_image.save()
-
+        session, created = ExamSession.objects.get_or_create(
+            student=request.user.student,
+            course_id=course_id,
+            defaults={"start_time": timezone.now(), "is_active": True},
+        )
         try:
             exam_session = ExamSession.objects.get(
                 course_id=course_id, student=request.user.student
