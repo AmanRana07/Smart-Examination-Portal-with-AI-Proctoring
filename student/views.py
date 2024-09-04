@@ -123,8 +123,13 @@ def take_exam_view(request, pk):
 @login_required(login_url="studentlogin")
 @user_passes_test(is_student)
 def calculate_marks_view(request):
-    if request.COOKIES.get("course_id") is not None:
-        course_id = request.COOKIES.get("course_id")
+    session_id = request.COOKIES.get("session_id")
+    if not session_id:
+        return HttpResponseBadRequest("Session ID is missing.")
+
+    session = get_object_or_404(ExamSession, id=session_id)
+    if session.course.id is not None:
+        course_id = session.course.id
         course = QMODEL.Course.objects.get(id=course_id)
 
         total_marks = 0
