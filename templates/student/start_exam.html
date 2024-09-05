@@ -245,6 +245,7 @@ function toggleChat() {
 
     // Start the timer with the calculated duration
     startTimer(examTimeInSeconds, display);
+    enforceFullScreen();
   };
 
   function startTimer(duration, display) {
@@ -330,6 +331,42 @@ function toggleChat() {
         captureImageForComparison(canvas.toDataURL());
     }, 15000);
 }
+
+function enforceFullScreen() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(err => {
+        alert(`Error enabling full-screen mode: ${err.message}`);
+      });
+    }
+
+    document.addEventListener('fullscreenchange', () => {
+      if (!document.fullscreenElement) {
+        Swal.fire({
+          icon: "warning",
+          title: "Full-Screen Mode Exited",
+          text: "Please stay in full-screen mode during the exam.",
+        }).then(() => {
+          enforceFullScreen();
+        });
+      }
+    });
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        Swal.fire({
+          icon: "warning",
+          title: "Tab Switch Detected",
+          text: "Please do not switch tabs during the exam.",
+        });
+        violationCount++;
+        saveViolationToDB("Tab switch detected!");
+        if (violationCount >= maxViolations) {
+          alert("Exam cancelled due to multiple violations.");
+          window.location.href = "{% url 'exam-cancellation-page' %}";
+        }
+      }
+    });
+  }
 
 
   // async function processVideo(model, video, context, canvas) {
