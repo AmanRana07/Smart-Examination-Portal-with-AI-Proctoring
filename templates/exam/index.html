@@ -11,68 +11,114 @@
         /* Chatbot Styles */
         #chatbot-container {
             position: fixed;
-            bottom: 75px;
+            bottom: 80px;
             right: 20px;
             width: 350px;
             max-height: 500px;
             border: 1px solid #ddd;
-            border-radius: 10px;
-            background-color: white;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            display: none; /* Hidden by default */
+            border-radius: 20px;
+            background: linear-gradient(135deg, #007bff, #00c6ff); /* Gradient background */
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            display: none;
             flex-direction: column;
             z-index: 1000;
+            opacity: 0;
+            transform: translateY(100%);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        #chatbot-container.show {
+            opacity: 1;
+            transform: translateY(0);
+            display: flex;
         }
 
         #chatbot-header {
             background-color: #007bff;
             color: white;
-            padding: 10px;
+            padding: 15px;
             text-align: center;
             cursor: pointer;
-            border-top-left-radius: 10px;
-            border-top-right-radius: 10px;
-            position: relative; /* Ensure the close icon is positioned relative to this header */
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            position: relative;
+            font-weight: bold;
+            font-size: 18px;
         }
 
         #chatbot-close {
             position: absolute;
             top: 10px;
-            right: 15px;
-            font-size: 24px; /* Larger size for better visibility */
+            right: 10px; /* Adjusted for smaller icon size */
+            font-size: 20px; /* Smaller icon size */
             cursor: pointer;
             color: white;
-            z-index: 1001; /* Ensure it's above other elements */
+            z-index: 1001;
         }
 
         #chatbot-messages {
-            padding: 10px;
+            padding: 15px;
             height: 350px;
             overflow-y: auto;
             flex: 1;
+            background-color: #f9f9f9; /* Light background for messages */
+        }
+
+        /* General message styles */
+        .message {
+            margin-bottom: 10px;
+           
+            border-radius: 20px;
+            max-width: 80%;
+            word-wrap: break-word; /* Ensure long words are wrapped */
+        }
+
+        /* Styles for bot messages (Senpai) */
+        .message.bot-message {
+            background-color: #007bff;
+            color: white;
+            margin-left: 0; /* Align to the left */
+            margin-right: auto; /* Push to the left side */
+            text-align: left; /* Ensure text is aligned left */
+        }
+
+        /* Styles for user messages */
+        .message.user-message {
+            background-color: #e1e1e1;
+            margin-left: auto; /* Align to the right */
+            margin-right: 0; /* Push to the right side */
+            text-align: right; /* Ensure text is aligned right */
         }
 
         #chatbot-input-container {
             display: flex;
             padding: 10px;
             border-top: 1px solid #ddd;
+            background-color: #ffffff;
         }
 
         #chatbot-input {
             flex: 1;
-            padding: 5px;
+            padding: 10px;
             border: 1px solid #ddd;
-            border-radius: 5px;
+            border-radius: 20px;
+            font-size: 16px;
         }
 
         #chatbot-send {
-            margin-left: 5px;
+            margin-left: 10px;
             background-color: #007bff;
             color: white;
             border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
+            padding: 10px 20px;
+            border-radius: 20px;
             cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        #chatbot-send:hover {
+            background-color: #003366;
         }
 
         #chatbot-toggle {
@@ -83,14 +129,20 @@
             color: white;
             border: none;
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
+            width: 50px; /* Smaller size */
+            height: 50px; /* Smaller size */
             cursor: pointer;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 24px;
+            font-size: 24px; /* Smaller icon size */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             z-index: 1001;
+            transition: background-color 0.3s ease;
+        }
+
+        #chatbot-toggle:hover {
+            background-color: #007bff;
         }
 
         #chatbot-toggle-icon {
@@ -98,8 +150,8 @@
         }
 
         .cross-icon {
-            font-size: 24px; /* Ensure the cross icon is large enough */
-            color: white; /* White color for contrast */
+            font-size: 24px; /* Smaller icon size */
+            color: white;
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -127,7 +179,7 @@
     <!-- Chatbot Container -->
     <div id="chatbot-container">
         <div id="chatbot-header">
-            Senpai
+            Senp-AI
             <span id="chatbot-close" onclick="closeChatbot()">×</span>
         </div>
         <div id="chatbot-messages"></div>
@@ -138,22 +190,29 @@
     </div>
 
     <!-- Chatbot Toggle Button -->
-    <button id="chatbot-toggle" onclick="toggleChatbot()">
+    <button id="chatbot-toggle" aria-hidden="true" onclick="toggleChatbot()">
         <span id="chatbot-toggle-icon" class="cross-icon">💬</span>
     </button>
 
     <script>
-
-
         let isFirstOpen = true; // Flag to check if it's the first open
 
         // Toggle chatbot visibility and change icon
         function toggleChatbot() {
             const chatbotContainer = document.getElementById('chatbot-container');
             const toggleIcon = document.getElementById('chatbot-toggle-icon');
-            if (chatbotContainer.style.display === 'none') {
-                chatbotContainer.style.display = 'flex';
-                toggleIcon.style.color = 'white'; 
+
+            if (chatbotContainer.classList.contains('show')) {
+                chatbotContainer.classList.remove('show');
+                setTimeout(() => {
+                    chatbotContainer.style.display = 'none'; // Hide completely after transition
+                }, 300); // Match the duration of the CSS transition
+                toggleIcon.textContent = '💬'; // Change to chat icon
+            } else {
+                chatbotContainer.style.display = 'flex'; // Ensure it's displayed before animation
+                setTimeout(() => {
+                    chatbotContainer.classList.add('show');
+                }, 10); // Slight delay to ensure the display change is registered
                 toggleIcon.textContent = ''; // Change to cross icon
 
                 // Send welcome message if it's the first time opening
@@ -177,9 +236,6 @@
                         console.error('Fetch Error:', error);
                     });
                 }
-            } else {
-                chatbotContainer.style.display = 'none';
-                toggleIcon.textContent = '💬'; // Change to chat icon
             }
         }
 
@@ -214,6 +270,7 @@
         function displayMessage(sender, message) {
             const messagesContainer = document.getElementById('chatbot-messages');
             const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender.toLowerCase()}-message`;
             messageDiv.innerHTML = `<strong>${sender}:</strong> ${message}`;
             messagesContainer.appendChild(messageDiv);
             messagesContainer.scrollTop = messagesContainer.scrollHeight; // Auto-scroll to the bottom
@@ -221,8 +278,11 @@
 
         // Close the chatbot
         function closeChatbot() {
-            document.getElementById('chatbot-container').style.display = 'none';
+            document.getElementById('chatbot-container').classList.remove('show');
             document.getElementById('chatbot-toggle-icon').textContent = '💬'; // Change back to chat icon
+            setTimeout(() => {
+                document.getElementById('chatbot-container').style.display = 'none'; // Hide completely after transition
+            }, 300); // Match the duration of the CSS transition
         }
 
         // Initialize chatbot
@@ -238,20 +298,12 @@
             });
         });
 
-        // Display welcome message when the chat window opens
-document.addEventListener('DOMContentLoaded', () => {
-    const chatWindow = document.getElementById('chat-window');
-    const messageContainer = document.createElement('div');
-    messageContainer.className = 'message bot-message';
-    messageContainer.textContent = 'Hello! I am Senpai. Welcome to TestMate 🥰! If you need any help, please ask!';
-    chatWindow.appendChild(messageContainer);
-});
-setInterval(function(){
-    if($('#chatbot-toggle-icon').is(':empty')){
-    $('#chatbot-toggle-icon').html('<i class="fa-solid fa-xmark"></i>')
-    }
-    },100)
-
+        // Adjust chat icon dynamically
+        setInterval(function () {
+            if ($('#chatbot-toggle-icon').is(':empty')) {
+                $('#chatbot-toggle-icon').html('<i class="fa-solid fa-xmark"></i>')
+            }
+        }, 100);
     </script>
 </body>
 

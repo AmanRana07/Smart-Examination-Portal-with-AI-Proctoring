@@ -2,23 +2,122 @@
 {% block content %}
 {% load static %}
 
+<style>
+  /* General Page Style */
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f7f9fc;
+    color: #333;
+  }
+
+  /* Card Layout */
+  .card {
+    background: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    padding: 2.5rem;
+    margin: 3rem auto;
+    max-width: 450px;
+    text-align: center;
+    border: none;
+  }
+
+  .card h2 {
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 1.5rem;
+    font-size: 1.75rem;
+  }
+
+  /* Video and Canvas Style */
+  .video-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+
+  video, canvas {
+    width: 280px;
+    height: 210px;
+    border-radius: 12px;
+   /* border: 2px solid #007bff; */
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+  }
+
+  video:hover, canvas:hover {
+    box-shadow: 0 10px 30px rgba(0, 123, 255, 0.3);
+  }
+
+  /* Button Styles */
+  .btn {
+    transition: all 0.3s ease;
+    padding: 0.8rem 2.5rem;
+    border-radius: 30px;
+    border: none;
+    font-weight: 600;
+    margin-top: 0.7rem;
+    margin-bottom: 0.7rem;
+    cursor: pointer;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: #fff;
+  }
+
+  .btn-primary:hover {
+    background: linear-gradient(135deg, #0056b3, #003f7f);
+    box-shadow: 0 6px 15px rgba(0, 91, 187, 0.2);
+  }
+
+  .btn-success {
+    background: linear-gradient(135deg, #28a745, #218838);
+    color: #fff;
+  }
+
+  .btn-success:hover {
+    background: linear-gradient(135deg, #218838, #19692c);
+    box-shadow: 0 6px 15px rgba(40, 167, 69, 0.2);
+  }
+
+  .btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
+
+  /* Success Message */
+  .capture-success {
+    font-size: 1rem;
+    color: #28a745;
+    margin-top: 1rem;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  .capture-success.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
+
 <div class="container my-4">
-    <div class="jumbotron">
-        <h2 class="text-center">Capture Your Image</h2>
-        <div class="row justify-content-center">
+    <div class="card">
+        <h2>Capture Your Image</h2>
+        <div class="video-container">
             <video id="video" autoplay></video>
-            <button id="capture" class="btn btn-primary ml-2">Capture Image</button>
-            <canvas id="canvas" width="320" height="240" style="display: none;"></canvas>
-            <div id="capture-success" class="capture-success ml-2" style="display: none;">Image captured successfully!</div>
+            <canvas id="canvas" width="240" height="180" style="display: none;"></canvas>
         </div>
+        <div id="capture-success" class="capture-success">Image captured successfully!</div>
+        <button id="capture" class="btn btn-primary">Capture Image</button>
         <form id="image-form" method="POST" action="{% url 'capture-image' course_id %}">
             {% csrf_token %}
             <input type="hidden" name="image_data" id="image-data">
-            <button type="submit" class="btn btn-success mt-4" disabled id="submit-button">Submit Image</button>
+            <button type="submit" class="btn btn-success" disabled id="submit-button">Submit Image</button>
         </form>
-        <a class="btn btn-success btn-sm mt-2" style="border-radius:0px;display:none;" href="{% url 'take-exam' course_id %}">
-            <span class="glyphicon glyphicon-check"></span> Attend Exam
-        </a> 
     </div>
 </div>
 
@@ -53,7 +152,7 @@
     tracks.forEach(track => track.stop());
 
     // Show capture success message and enable submit button
-    captureSuccess.style.display = 'block';
+    captureSuccess.classList.add('show');
     submitButton.disabled = false;
   });
 </script>
