@@ -333,12 +333,7 @@ function toggleChat() {
 }
 
 function enforceFullScreen() {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch(err => {
-        alert(`Error enabling full-screen mode: ${err.message}`);
-      });
-    }
-
+    
     document.addEventListener('fullscreenchange', () => {
       if (!document.fullscreenElement) {
         Swal.fire({
