@@ -20,6 +20,9 @@ import spacy
 from spellchecker import SpellChecker
 import Levenshtein
 from nltk.corpus import words
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Course
+from .forms import CourseForm  # Ensure you have a form class for the Course model
 
 
 
@@ -443,3 +446,18 @@ def chatbot_view(request):
 
     # Handle invalid request methods
     return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+
+
+
+@login_required(login_url='adminlogin')
+def admin_edit_course(request, course_id):
+    course = get_object_or_404(Course, id=course_id)
+    if request.method == 'POST':
+        form = CourseForm(request.POST, instance=course)
+        if form.is_valid():
+            form.save()
+            return redirect('admin-view-course')
+    else:
+        form = CourseForm(instance=course)
+    return render(request, 'exam/admin_edit_course.html', {'form': form})

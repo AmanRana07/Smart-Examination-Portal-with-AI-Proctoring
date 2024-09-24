@@ -41,6 +41,7 @@ urlpatterns = [
     path('admin-add-course', views.admin_add_course_view,name='admin-add-course'),
     path('admin-view-course', views.admin_view_course_view,name='admin-view-course'),
     path('delete-course/<int:pk>', views.delete_course_view,name='delete-course'),
+    path('edit-course/<int:course_id>/', views.admin_edit_course, name='edit-course'),
 
     path('admin-question', views.admin_question_view,name='admin-question'),
     path('admin-add-question', views.admin_add_question_view,name='admin-add-question'),
