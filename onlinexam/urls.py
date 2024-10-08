@@ -7,8 +7,10 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("teacher/", include("teacher.urls")),
     path("student/", include("student.urls")),
-    path("", views.home_view, name=""),
-    path("home/", views.home_view2, name="indexx"),
+    path("home/", views.home_view, name=""),
+    path("", views.home_view2, name="indexx"),
+    path("about/", views.aboutus, name="about"),
+    
     path("logout", LogoutView.as_view(template_name="exam/logout.html"), name="logout"),
     path("contactus", views.contactus_view),
     path("afterlogin", views.afterlogin_view, name="afterlogin"),

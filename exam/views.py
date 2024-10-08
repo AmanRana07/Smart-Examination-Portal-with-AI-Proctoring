@@ -45,6 +45,10 @@ def home_view2(request):
         return HttpResponseRedirect("afterlogin")
     return render(request, "exam/index1.html")
 
+def aboutus(request):
+    if request.user.is_authenticated:
+        return HttpResponseRedirect("afterlogin")
+    return render(request, "exam/about.html")
 
 def is_teacher(user):
     return user.groups.filter(name="TEACHER").exists()
