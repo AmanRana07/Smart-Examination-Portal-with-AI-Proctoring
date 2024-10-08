@@ -6,14 +6,33 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-  <style media="screen">
+  <!-- Add Bootstrap CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+  <style>
     .jumbotron {
       margin-top: 0px;
       margin-bottom: 0px;
+      text-align: center; /* Center the content */
+      background-color: #f8f9fa; /* Light background for a modern look */
+      padding: 50px 20px;
     }
 
     .jumbotron h1 {
-      text-align: center;
+      font-size: 3rem;
+      font-weight: bold;
+    }
+
+    .jumbotron p.lead {
+      font-size: 1.25rem;
+      font-weight: 300;
+    }
+
+    .btn-primary,
+    .btn-success {
+      border-radius: 5px;
+      padding: 10px 20px;
+      font-size: 1.1rem;
     }
 
   </style>
@@ -24,18 +43,24 @@
 
   {% include "exam/navbar1.html" %}
   <br><br>
-  <div class="jumbotron" style="margin-bottom:0px;">
+  
+  <!-- Centered Jumbotron -->
+  <div class="jumbotron">
     <h1 class="display-4">Hello Teacher,</h1>
     <p class="lead">and Welcome to Online Examination System</p>
     <hr class="my-4">
-    <p>Select any of them to access into the system</p>
+    <p>Select any of the options below to access the system</p>
     <p class="lead">
-      <a class="btn btn-primary" style="border-radius:0px;" href="teachersignup" role="button">Create Your Account</a>
-      <a class="btn btn-success" style="border-radius:0px;" href="teacherlogin" role="button">Login Now</a>
+      <a class="btn btn-primary" href="teachersignup" role="button">Create Your Account</a>
+      <a class="btn btn-success" href="teacherlogin" role="button">Login Now</a>
     </p>
-    <br><br><br><br>
   </div>
+  
   {% include "exam/footer1.html" %}
+
+  <!-- Add Bootstrap JS (optional) -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
 </body>
 
 </html>
