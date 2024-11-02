@@ -1,6 +1,6 @@
 {% extends 'teacher/teacherbase.html' %}
 {% block content %}
-{%load static%}
+{% load static %}
 
 <head>
   <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
@@ -25,31 +25,29 @@
 <div class="container">
   <div class="panel panel-primary">
     <div class="panel-heading">
-      <h6 class="panel-title">Registered Students</h6>
+      <h6 class="panel-title">Marks for {{ student.get_name }}</h6>
     </div>
     <table class="table table-hover table-bordered" id="dev-table">
       <thead>
         <tr>
-
-          <th>Name</th>
-          <th>Photo</th>
-          
-         
-          <th>Action</th>
-          
+          <th>Exam Name</th>
+          <th>Marks</th>
+          <th>Date</th>
         </tr>
       </thead>
-      {% for t in student_data %}
-      <tr>
-
-        <td> {{t.get_name}}</td>
-        <td> <img src="{% static t.profile_pic.url %}" alt="Profile Pic" height="40px" width="40px" /></td>
-        
-        
-        <td><a class="btn btn-primary btn-sm" style="border-radius: 0%;" href="{% url 'teacher-view-student-marks' t.id  %}"><span class="glyphicon glyphicon-eye-open"></span> View Marks</a></td>
-        
-      </tr>
-      {% endfor %}
+      <tbody>
+        {% for result in results %}
+        <tr>
+          <td>{{ result.exam.course_name }}</td> <!-- Displaying exam name -->
+          <td>{{ result.marks }}</td>            <!-- Displaying marks -->
+          <td>{{ result.date }}</td>              <!-- Displaying date of result -->
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="3" class="text-center">No marks available for this student.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
     </table>
   </div>
 </div>

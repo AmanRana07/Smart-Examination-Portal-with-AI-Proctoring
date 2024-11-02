@@ -298,7 +298,7 @@ def download_questions_template(request):
     return response
 
 
-@login_required(login_url="adminlogin")
+@login_required(login_url="teacherlogin")
 def teacher_view_student_view(request):
     # Get the current teacher
     teacher = request.user
@@ -326,7 +326,7 @@ def teacher_view_student_view(request):
     return render(request, "teacher/teacher_student.html", context)
 
 
-@login_required(login_url="adminlogin")
+@login_required(login_url="teacherlogin")
 def student_view(request):
     # Get the current teacher
     # Get the current teacher
@@ -353,3 +353,28 @@ def student_view(request):
         "student_data": student_data,
     }
     return render(request, "teacher/teacher_view_student.html", context)
+
+
+def teacher_view_student_marks(request, student_id):
+    # Get the current teacher
+    teacher = request.user
+
+    # Fetch courses created by this teacher
+    teacher_courses = QMODEL.Course.objects.filter(creator=teacher)
+
+    # Get Results related to the specific student for the teacher's courses
+    results = QMODEL.Result.objects.filter(
+        exam__in=teacher_courses,  # Filter results by exams in teacher's courses
+        student_id=student_id,  # Filter by the specific student ID
+    )
+
+    # Optionally, fetch student details if needed
+    student = get_object_or_404(QMODEL.Student, id=student_id)
+
+    context = {
+        "student": student,
+        "results": results,
+        "total_results": results.count(),  # Count of results for this student
+    }
+
+    return render(request, "teacher/teacher_student_marks.html", context)

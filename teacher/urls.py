@@ -60,4 +60,9 @@ urlpatterns = [
         views.student_view,
         name="students",
     ),
+    path(
+        "students/<int:student_id>/marks/",
+        views.teacher_view_student_marks,
+        name="teacher-view-student-marks",
+    ),
 ]
