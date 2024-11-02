@@ -33,62 +33,103 @@
             display: flex;
         }
 
-        #chatbot-header {
-            background-color: #007bff;
-            color: white;
-            padding: 15px;
-            text-align: center;
-            cursor: pointer;
-            border-top-left-radius: 20px;
-            border-top-right-radius: 20px;
-            position: relative;
-            font-weight: bold;
-            font-size: 18px;
-        }
+       /* Chatbot Header Styling */
+#chatbot-header {
+    display: flex;
+    align-items: center;
+    background-color: #003366;
+    color: white;
+    padding: 15px;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    position: relative;
+    font-weight: bold;
+    font-size: 18px;
+}
 
-        #chatbot-close {
-            position: absolute;
-            top: 10px;
-            right: 10px; /* Adjusted for smaller icon size */
-            font-size: 20px; /* Smaller icon size */
-            cursor: pointer;
-            color: white;
-            z-index: 1001;
-        }
+/* Avatar Styling */
+#chatbot-avatar {
+    width: 100px!important;/* Slightly larger avatar */
+    height: 80px;
+    border-radius: 50%;
+    margin-right: 30px; /* Space between avatar and text */
+}
+
+/* Header Text Styling */
+#chatbot-header-text {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Main Greeting Text */
+#chatbot-header-text span {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0;
+}
+
+/* Subtitle Text */
+#chatbot-header-text p {
+    font-size: 14px;
+    color: #e0e0e0;
+    margin: 5px 0 0;
+    padding-left: 5px; /* Slight indent to align it to the right */
+}
+
+/* Close Button Styling */
+#chatbot-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 20px;
+    cursor: pointer;
+    color: white;
+}
 
         #chatbot-messages {
             padding: 15px;
             height: 350px;
             overflow-y: auto;
             flex: 1;
-            background-color: #f9f9f9; /* Light background for messages */
+            background-color:#f9f9f9; /* Light background for messages */
         }
 
-        /* General message styles */
-        .message {
-            margin-bottom: 10px;
-           
-            border-radius: 20px;
-            max-width: 80%;
-            word-wrap: break-word; /* Ensure long words are wrapped */
-        }
+        /* Add some margin to each message for spacing */
+.message {
+    margin-bottom: 12px;
+    max-width: 85%; /* Reduce max-width slightly for better layout */
+    word-wrap: break-word; /* Ensure long words are wrapped */
+}
 
         /* Styles for bot messages (Senpai) */
-        .message.bot-message {
-            background-color: #007bff;
-            color: white;
-            margin-left: 0; /* Align to the left */
-            margin-right: auto; /* Push to the left side */
-            text-align: left; /* Ensure text is aligned left */
-        }
+.message.bot-message {
+    background-color:  /* Primary blue color for bot messages */
+    color: #f2f2f;
+    margin-left: 0; /* Align to the left */
+    margin-right: auto; /* Push to the left side */
+    text-align: left; /* Ensure text is aligned left */
+    padding: 10px 15px; /* Add padding for better spacing */
+    border-radius: 15px 15px 15px 0; /* Rounded corners with a flat side on the right */
+    width: max-content!important;
+    font-size: 16px; /* Slightly increase font size */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15); /* Add subtle shadow for depth */
+}
 
-        /* Styles for user messages */
-        .message.user-message {
-            background-color: #e1e1e1;
-            margin-left: auto; /* Align to the right */
-            margin-right: 0; /* Push to the right side */
-            text-align: right; /* Ensure text is aligned right */
-        }
+.message.user-message {
+    background-color: #007bff; /* Blue color for user messages */
+    color: white;
+    margin-left: auto!important; /* Align to the right */
+    margin-right: 0!important; /* Push to the right side */
+    text-align: right; /* Ensure text is aligned right */
+    padding: 10px 15px; /* Add padding for better spacing */
+    border-radius: 15px 15px 0 15px; /* Rounded corners with a flat side on the left */
+    font-size: 16px; /* Slightly increase font size */
+    box-shadow: 0 4px 5px rgba(0, 51, 104, 0.3); /* Slight blue-tinted shadow for depth */
+    /* Allow the width to fit content */ 
+    width: max-content!important;
+ /* Set width to auto to fit the content */
+    word-wrap: break-word; /* Ensure long words are wrapped */
+}
 
         #chatbot-input-container {
             display: flex;
@@ -153,6 +194,43 @@
             font-size: 24px; /* Smaller icon size */
             color: white;
         }
+
+        /* Typing indicator styles */
+        .typing-indicator {
+            margin-left: 0; /* Align to the left */
+            margin-right: auto; /* Push to the left side */
+            font-style: italic;
+            color: #007bff; /* Matches the bot message color */
+        }
+
+        .typing-dots::after {
+            content: '...';
+            animation: ellipsis 1.5s infinite;
+        }
+
+        @keyframes ellipsis {
+            0% {
+                content: '.';
+            }
+            33% {
+                content: '..';
+            }
+            66% {
+                content: '...';
+            }
+            100% {
+                content: '';
+            }
+        }
+
+    
+            #chatbot-avatar {
+                width: 50px;
+                height: 50px;
+                border-radius: 50%; /* Optional: make it circular */
+            }
+        
+        
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
@@ -179,13 +257,17 @@
     <!-- Chatbot Container -->
     <div id="chatbot-container">
         <div id="chatbot-header">
-            Senp-AI
+            <img src="{% static "image/avatar.webp" %}" id="chatbot-avatar" alt="Avatar">
+            <div id="chatbot-header-text">
+                <span>Hi, I’m Senp-AI!</span>
+                <p>I’m here to help. So, if you have any questions, go ahead and ask me!</p>
+            </div>
             <span id="chatbot-close" onclick="closeChatbot()">×</span>
         </div>
         <div id="chatbot-messages"></div>
         <div id="chatbot-input-container">
-            <input type="text" id="chatbot-input" placeholder="Type your message...">
-            <button id="chatbot-send" onclick="sendMessage()">Send</button>
+            <input type="text" id="chatbot-input" placeholder="Enter your question">
+            <button id="chatbot-send" onclick="sendMessage()">&#9658;</button>
         </div>
     </div>
 
@@ -230,25 +312,44 @@
                     })
                     .then(response => response.json())
                     .then(data => {
-                        displayMessage('Senpai', data.response);
+                        if (data.response) {
+                            addMessage(data.response, 'bot-message'); // Add welcome message from bot
+                        }
                     })
-                    .catch(error => {
-                        console.error('Fetch Error:', error);
-                    });
+                    .catch(error => console.error('Error fetching welcome message:', error));
                 }
             }
         }
 
-        // Send a message to the chatbot
+        // Function to add a message to the chat
+        function addMessage(message, className) {
+            const messageElement = document.createElement('div');
+            messageElement.className = `message ${className}`;
+            messageElement.textContent = message;
+            document.getElementById('chatbot-messages').appendChild(messageElement);
+            document.getElementById('chatbot-messages').scrollTop = document.getElementById('chatbot-messages').scrollHeight;
+        }
+
+        // Event listener to send message on Enter key press
+        document.getElementById('chatbot-input').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+                event.preventDefault(); // Prevent default form submission if any
+            }
+        });
+
+        // Function to handle sending of messages
         function sendMessage() {
-            const input = document.getElementById('chatbot-input');
-            const message = input.value.trim();
-            if (!message) return;
+            const inputElement = document.getElementById('chatbot-input');
+            const message = inputElement.value.trim();
 
-            displayMessage('You', message);
-            input.value = '';
+            if (message === '') return; // Ignore empty messages
 
-            // Send the message to the server
+            addMessage(message, 'user-message'); // Add user message to chat
+
+            inputElement.value = ''; // Clear input field
+
+            // Send user message to backend for processing
             fetch('/chatbot/', {
                 method: 'POST',
                 headers: {
@@ -259,45 +360,17 @@
             })
             .then(response => response.json())
             .then(data => {
-                displayMessage('Senpai', data.response);
+                if (data.response) {
+                    addMessage(data.response, 'bot-message'); // Add bot response
+                }
             })
-            .catch(error => {
-                console.error('Fetch Error:', error);
-            });
+            .catch(error => console.error('Error sending message:', error));
         }
 
-        // Display a message in the chatbot
-        function displayMessage(sender, message) {
-            const messagesContainer = document.getElementById('chatbot-messages');
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${sender.toLowerCase()}-message`;
-            messageDiv.innerHTML = `<strong>${sender}:</strong> ${message}`;
-            messagesContainer.appendChild(messageDiv);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight; // Auto-scroll to the bottom
-        }
-
-        // Close the chatbot
+        // Close chatbot
         function closeChatbot() {
             document.getElementById('chatbot-container').classList.remove('show');
-            document.getElementById('chatbot-toggle-icon').textContent = '💬'; // Change back to chat icon
-            setTimeout(() => {
-                document.getElementById('chatbot-container').style.display = 'none'; // Hide completely after transition
-            }, 300); // Match the duration of the CSS transition
         }
-
-        // Initialize chatbot
-        document.addEventListener('DOMContentLoaded', function () {
-            document.getElementById('chatbot-container').style.display = 'none'; // Hide on load
-            
-            // Handle Enter key press in the chatbot input
-            document.getElementById('chatbot-input').addEventListener('keypress', function (e) {
-                if (e.key === 'Enter') { // Check if Enter key was pressed
-                    e.preventDefault(); // Prevent default form submission
-                    sendMessage(); // Call sendMessage function
-                }
-            });
-        });
-
         // Adjust chat icon dynamically
         setInterval(function () {
             if ($('#chatbot-toggle-icon').is(':empty')) {
