@@ -1,0 +1,45 @@
+{% extends 'teacher/teacherbase.html' %}
+{% load widget_tweaks %}
+{% block content %}
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+    <style type="text/css">
+      a:link {
+        text-decoration: none;
+      }
+      .card {
+        box-shadow: 0 1px 2.94px 0.06px rgba(4, 26, 55, 0.16);
+        margin-bottom: 30px;
+        transition: all 0.3s ease-in-out;
+      }
+    </style>
+</head>
+
+<div class="container">
+    <h2 class="text-center">Upload Questions CSV</h2>
+    <a href="{% url 'download-questions-template' %}" class="btn btn-info" style="margin-bottom: 20px;">Download Questions Template</a>
+    <form method="POST" enctype="multipart/form-data" style="margin: 50px 0;">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="course">Select Course</label>
+            <select name="courseID" class="form-control" required>
+                {% for course in courses %}
+                <option value="{{ course.id }}">{{ course.course_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="csv_file">Upload CSV</label>
+            <input type="file" name="csv_file" class="form-control" accept=".csv" required>
+        </div>
+        <button type="submit" class="btn btn-success">Upload Questions</button>
+    </form>
+</div>
+
+{% endblock content %}

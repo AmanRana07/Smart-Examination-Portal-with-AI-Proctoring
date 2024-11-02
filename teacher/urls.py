@@ -17,6 +17,11 @@ urlpatterns = [
     path("delete-exam/<int:pk>", views.delete_exam_view, name="delete-exam"),
     path("teacher-question", views.teacher_question_view, name="teacher-question"),
     path(
+        "question-format",
+        views.teacher_question_format_view,
+        name="teacher-question-format",
+    ),
+    path(
         "teacher-add-question",
         views.teacher_add_question_view,
         name="teacher-add-question",
@@ -34,5 +39,15 @@ urlpatterns = [
         "edit-course/<int:course_id>/",
         views.teacher_edit_course,
         name="edit-exam-course",
+    ),
+    path(
+        "teacher-add-multiple-questions/",
+        views.teacher_add_multiple_questions_view,
+        name="teacher-add-multiple-questions",
+    ),
+    path(
+        "download-questions-template/",
+        views.download_questions_template,
+        name="download-questions-template",
     ),
 ]
