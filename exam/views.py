@@ -520,7 +520,7 @@ def chatbot_view(request):
 
             # Check if it's the first interaction or if the message is a start/init signal
             if not user_message or user_message in ["start", "init"]:
-                response_message = "Hello! I am Senpai. Welcome to TestMate 🥰! If you need any help, please ask!"
+                response_message = "Hi! Welcome to TestMate 🥰! What can I help you with?"
             else:
                 # Process the user's query and get the intent
                 intent = get_intent(user_message)
