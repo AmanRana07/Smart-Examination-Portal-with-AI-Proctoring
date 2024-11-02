@@ -5,9 +5,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Exam Cancelled</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+            background-color: #f8f9fa;
+        }
+        h1 {
+            color: #dc3545;
+        }
+        p {
+            margin-bottom: 30px;
+            font-size: 18px;
+        }
+        .back-button {
+            display: inline-block;
+            background-color: #007bff;
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .back-button:hover {
+            background-color: #0056b3;
+        }
+        .back-button i {
+            margin-right: 8px;
+        }
+    </style>
 </head>
 <body>
     <h1>{{ message }}</h1>
-    <p>Your exam has been cancelled due to a mismatch in facial recognition. Please contact support for further assistance.</p>
+    <p>Your exam has been cancelled due to multiple violations. Please contact support for further assistance.</p>
+    <a href="{% url 'student-exam' %}" class="back-button">
+        <i class="fa-solid fa-backward"></i></i> Back to Student Page
+    </a>
 </body>
 </html>
