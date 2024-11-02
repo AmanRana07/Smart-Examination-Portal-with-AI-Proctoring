@@ -14,6 +14,7 @@ from django.contrib import messages
 import csv
 import io
 from django.http import HttpResponse
+from collections import defaultdict
 
 
 # for showing signup/login button for teacher
@@ -295,3 +296,60 @@ def download_questions_template(request):
     )
 
     return response
+
+
+@login_required(login_url="adminlogin")
+def teacher_view_student_view(request):
+    # Get the current teacher
+    teacher = request.user
+
+    # Fetch courses created by this teacher
+    teacher_courses = QMODEL.Course.objects.filter(creator=teacher)
+
+    # Get ExamSessions related to these courses
+    exam_sessions = QMODEL.ExamSession.objects.filter(course__in=teacher_courses)
+
+    # Get Results related to these courses through the exam field
+    results = QMODEL.Result.objects.filter(exam__in=teacher_courses)
+
+    # Prepare student data with marks for each course
+    student_data = defaultdict(list)
+    for result in results:
+        student_data[result.student].append(
+            {"course": result.exam.course_name, "marks": result.marks}
+        )
+
+    context = {
+        "total_student": len(student_data),  # Unique students count
+        "student_data": student_data,
+    }
+    return render(request, "teacher/teacher_student.html", context)
+
+
+@login_required(login_url="adminlogin")
+def student_view(request):
+    # Get the current teacher
+    # Get the current teacher
+    teacher = request.user
+
+    # Fetch courses created by this teacher
+    teacher_courses = QMODEL.Course.objects.filter(creator=teacher)
+
+    # Get ExamSessions related to these courses
+    exam_sessions = QMODEL.ExamSession.objects.filter(course__in=teacher_courses)
+
+    # Get Results related to these courses through the exam field
+    results = QMODEL.Result.objects.filter(exam__in=teacher_courses)
+
+    # Prepare student data with marks for each course
+    student_data = defaultdict(list)
+    for result in results:
+        student_data[result.student].append(
+            {"course": result.exam.course_name, "marks": result.marks}
+        )
+
+    context = {
+        "total_student": len(student_data),  # Unique students count
+        "student_data": student_data,
+    }
+    return render(request, "teacher/teacher_view_student.html", context)

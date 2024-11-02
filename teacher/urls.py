@@ -50,4 +50,14 @@ urlpatterns = [
         views.download_questions_template,
         name="download-questions-template",
     ),
+    path(
+        "student-views",
+        views.teacher_view_student_view,
+        name="teacher_view_student",
+    ),
+    path(
+        "students",
+        views.student_view,
+        name="students",
+    ),
 ]
