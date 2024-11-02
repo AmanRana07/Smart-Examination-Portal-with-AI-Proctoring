@@ -8,6 +8,7 @@ class Course(models.Model):
    question_number = models.PositiveIntegerField()
    total_marks = models.PositiveIntegerField()
    duration_minutes = models.IntegerField(default=60)
+   creator = models.ForeignKey(User, on_delete=models.CASCADE, default=3)
    def __str__(self):
         return self.course_name
 

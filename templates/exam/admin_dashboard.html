@@ -2,78 +2,93 @@
 {% load widget_tweaks %}
 {% block content %}
 
-
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-    <link href="http://netdna.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
-    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
-    <style type="text/css">
-      a:link {
-        text-decoration: none;
-      }
-  
-      .order-card {
-        color: rgb(255, 255, 255);
-      }
-  
-      .bg-c-blue {
-        background: #04868f;
-      }
-  
-      .bg-c-green {
-        background:#4C51BF;
-      }
-  
-      .bg-c-yellow {
-        background: #F56565;
-      }
-  
-      .bg-c-pink {
-        background:#3186ca;
-      }
-  
-  
-      .card {
-        
-        -webkit-box-shadow: 0 1px 2.94px 0.06px rgba(4, 26, 55, 0.16);
-        box-shadow: 0 1px 2.94px 0.06px rgba(4, 26, 55, 0.16);
-        margin-bottom: 30px;
-        -webkit-transition: all 0.3s ease-in-out;
-        transition: all 0.3s ease-in-out;
-      }
-  
-      .card .card-block {
-        padding: 25px;
-      }
-  
-      .order-card i {
-        font-size: 26px;
-      }
-  
-      .f-left {
-        float: left;
-      }
-  
-      .f-right {
-        float: right;
-      }
-      header {
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+  <link href="http://netdna.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    a:link {
+      text-decoration: none;
+    }
+
+    .order-card {
+      color: rgb(255, 255, 255);
+    }
+
+    .bg-c-blue {
+      background: #04868f;
+    }
+
+    .bg-c-green {
+      background: #4C51BF;
+    }
+
+    .bg-c-yellow {
+      background: #F56565;
+    }
+
+    .bg-c-pink {
+      background: #3186ca;
+    }
+
+    .card {
+      -webkit-box-shadow: 0 1px 2.94px 0.06px rgba(4, 26, 55, 0.16);
+      box-shadow: 0 1px 2.94px 0.06px rgba(4, 26, 55, 0.16);
+      margin-bottom: 30px;
+      -webkit-transition: all 0.3s ease-in-out;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .card .card-block {
+      padding: 25px;
+    }
+
+    .order-card i {
+      font-size: 26px;
+    }
+
+    .f-left {
+      float: left;
+    }
+
+    .f-right {
+      float: right;
+    }
+
+    .chart-container {
+      position: relative;
+      margin: auto;
+      height: 400px;
+      width: 100%;
+    }
+
+    canvas {
+      display: block;
+      margin: 0 auto;
+      background-color: #f7f7f7;
+      border-radius: 15px;
+      padding: 15px;
+      box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    header {
       left: 0px;
       right: 0px;
     }
-    </style>
-  </head>
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+</head>
+
 <br><br>
 
-  <div class="container">
-    <div class="row">
-      <div class="col-md-4 col-xl-3">
-        <a href="admin-view-student" style="text-decoration: none;color:white;">
+<div class="container">
+  <div class="row">
+    <div class="col-md-4 col-xl-3">
+      <a href="admin-view-student" style="text-decoration: none;color:white;">
         <div class="card bg-c-pink order-card">
           <div class="card-block">
             <h6 class="m-b-20">Registered Students </h6>
@@ -81,11 +96,10 @@
           </div>
         </div>
       </a>
-      </div>
-      
-  
-      <div class="col-md-4 col-xl-3">
-        <a href="admin-view-teacher" style="text-decoration: none;color:white;">
+    </div>
+
+    <div class="col-md-4 col-xl-3">
+      <a href="admin-view-teacher" style="text-decoration: none;color:white;">
         <div class="card bg-c-green order-card">
           <div class="card-block">
             <h6 class="m-b-20">Total Teachers </h6>
@@ -93,21 +107,21 @@
           </div>
         </div>
       </a>
-      </div>
-  
-      <div class="col-md-4 col-xl-3">
-        <a href="admin-view-course" style="text-decoration: none;color:white;">
+    </div>
+
+    <div class="col-md-4 col-xl-3">
+      <a href="admin-view-course" style="text-decoration: none;color:white;">
         <div class="card bg-c-blue order-card">
           <div class="card-block">
             <h6 class="m-b-20">Total Courses</h6>
-           <h2 class="text-right"><i class="fas fa-book f-left"></i><span>{{total_course}}</span></h2> 
+            <h2 class="text-right"><i class="fas fa-book f-left"></i><span>{{total_course}}</span></h2>
           </div>
         </div>
       </a>
-      </div>
-  
-      <div class="col-md-4 col-xl-3">
-        <a href="admin-view-question" style="text-decoration: none;color:white;">
+    </div>
+
+    <div class="col-md-4 col-xl-3">
+      <a href="admin-view-question" style="text-decoration: none;color:white;">
         <div class="card bg-c-yellow order-card">
           <div class="card-block">
             <h6 class="m-b-20">Available Questions</h6>
@@ -115,16 +129,215 @@
           </div>
         </div>
       </a>
-      </div>
-
-      
     </div>
   </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="mt-4">Student Registrations Over Time</h2>
+      <div class="chart-container">
+        <canvas id="userRegistrationChart" width="400" height="200"></canvas>
+      </div>
+    </div>
+
+
+    <div class="col-md-6">
+      <h2>Violation Done By Student</h2>
+      <div class="chart-container">
+        <canvas id="violationChart" width="400" height="200"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6 mt-4">
+      <h2>Overall Performance vs. Violations</h2>
+      <div class="chart-container">
+        <canvas id="performanceVsViolationsChart"></canvas>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <h2>Violation Frequency</h2>
+      <div class="chart-container">
+          <canvas id="violationPieChart" width="400" height="200"></canvas>
+      </div>
+  </div>
+  </div>
+</div>
+
 
 
 <br><br><br><br><br><br><br><br><br><br>
 
 <script src="http://netdna.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
 
+<script>
+  var ctx = document.getElementById('userRegistrationChart').getContext('2d');
+  var userRegistrationChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: {{ dates| safe }},  // Use |safe to pass the list as a JSON array
+  datasets: [{
+    label: 'Number of Users',
+    data: {{ counts| safe }},  // Same for counts
+    borderColor: 'rgba(75, 192, 192, 1)',
+    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+    borderWidth: 3,
+    pointBackgroundColor: 'rgba(75, 192, 192, 1)',
+    pointRadius: 5,
+    pointHoverRadius: 7,
+    pointHoverBackgroundColor: 'rgba(255, 99, 132, 1)',
+    pointHoverBorderColor: 'rgba(75, 192, 192, 1)',
+    pointHoverBorderWidth: 2
+            }]
+        },
+  options: {
+    responsive: true,
+      maintainAspectRatio: false,
+        plugins: {
+      tooltip: {
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+          titleColor: '#fff',
+            bodyColor: '#fff',
+              borderColor: '#333',
+                borderWidth: 1,
+                  cornerRadius: 3
+      }
+    },
+    scales: {
+      x: {
+        type: 'time',
+          time: {
+          unit: 'day'
+        },
+        grid: {
+          display: false
+        }
+      },
+      y: {
+        beginAtZero: true,
+          grid: {
+          color: 'rgba(200, 200, 200, 0.2)'
+        }
+      }
+    }
+  }
+    });
+</script>
+<!-- Voilation Frequency -->
+<script>
+  var ctx = document.getElementById('violationChart').getContext('2d');
+  var violationChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: {{ violation_labels| safe }},
+  datasets: [{
+    label: 'Number of Violations',
+    data: {{ violation_values| safe }},
+    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+    borderColor: 'rgba(255, 99, 132, 1)',
+    borderWidth: 1
+          }]
+      },
+  options: {
+    scales: {
+      y: {
+        beginAtZero: true
+      }
+    }
+  }
+  });
+</script>
+<script>
+  var ctx3 = document.getElementById('performanceVsViolationsChart').getContext('2d');
+  var performanceVsViolationsChart = new Chart(ctx3, {
+    type: 'scatter',
+    data: {
+      labels: {{ performance_labels| safe }},
+  datasets: [{
+    label: 'Overall Performance vs. Violations',
+    data: {{ performance_values| safe }}.map((value, index) => ({ x: value, y: {{ violation_values| safe }}[index] })),
+    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+    borderColor: 'rgba(54, 162, 235, 1)',
+    borderWidth: 1,
+    pointRadius: 5,
+    pointHoverRadius: 7
+                }]
+            },
+  options: {
+    responsive: true,
+      maintainAspectRatio: false,
+        plugins: {
+      tooltip: {
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+          titleColor: '#fff',
+            bodyColor: '#fff',
+              borderColor: '#333',
+                borderWidth: 1,
+                  cornerRadius: 3
+      }
+    },
+    scales: {
+      x: {
+        title: {
+          display: true,
+            text: 'Overall Performance (Average Marks)'
+        },
+        beginAtZero: true
+      },
+      y: {
+        title: {
+          display: true,
+            text: 'Number of Violations'
+        },
+        beginAtZero: true
+      }
+    }
+  }
+        });
+</script>
+
+<script>
+  var ctx = document.getElementById('violationPieChart').getContext('2d');
+  var violationPieChart = new Chart(ctx, {
+      type: 'pie',
+      data: {
+          labels: {{ voilation_messages|safe }},
+          datasets: [{
+              label: 'Violation Frequency',
+              data: {{ violation_counts|safe }},
+              backgroundColor: [
+                  'rgba(255, 99, 132, 0.2)',
+                  'rgba(54, 162, 235, 0.2)',
+                  'rgba(255, 206, 86, 0.2)',
+                  'rgba(75, 192, 192, 0.2)',
+                  'rgba(153, 102, 255, 0.2)',
+                  'rgba(255, 159, 64, 0.2)'
+              ],
+              borderColor: [
+                  'rgba(255, 99, 132, 1)',
+                  'rgba(54, 162, 235, 1)',
+                  'rgba(255, 206, 86, 1)',
+                  'rgba(75, 192, 192, 1)',
+                  'rgba(153, 102, 255, 1)',
+                  'rgba(255, 159, 64, 1)'
+              ],
+              borderWidth: 1
+          }]
+      },
+      options: {
+          responsive: true,
+          plugins: {
+              tooltip: {
+                  backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                  titleColor: '#fff',
+                  bodyColor: '#fff',
+                  borderColor: '#333',
+                  borderWidth: 1,
+                  cornerRadius: 3
+              }
+          }
+      }
+  });
+</script>
 
 {% endblock content %}

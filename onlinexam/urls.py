@@ -48,5 +48,6 @@ urlpatterns = [
     path('view-question/<int:pk>', views.view_question_view,name='view-question'),
     path('delete-question/<int:pk>', views.delete_question_view,name='delete-question'),
     path('chatbot/', views.chatbot_view, name='chatbot-response'),
+    path("edit-course/<int:course_id>/", views.admin_edit_course, name="edit-course"),
 
 ]
