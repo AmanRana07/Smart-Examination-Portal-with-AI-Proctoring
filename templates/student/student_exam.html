@@ -4,51 +4,106 @@
 
 <head>
   <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-  <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
   <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+  <script src="//cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 
-  <style media="screen">
+  <style>
     a:link {
       text-decoration: none;
     }
-
     h6 {
       text-align: center;
     }
-
-    .row {
-      margin: 100px;
+    .container {
+      margin-top: 50px;
+    }
+    .panel {
+      border-radius: 15px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    .panel-heading {
+      border-top-left-radius: 15px;
+      border-top-right-radius: 15px;
+      background-color: #007bff;
+      color: white;
+    }
+    .table th {
+      background-color: #f8f9fa;
+      font-weight: bold;
+    }
+    .table-hover tbody tr:hover {
+      background-color: #f1f1f1;
+    }
+    .btn {
+      border-radius: 20px;
+    }
+    .footer {
+      margin-top: 50px;
+      text-align: center;
+      font-size: 14px;
+      color: #777;
     }
   </style>
+
+  <script>
+    function showCancelledAlert() {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Cancelled',
+        text: 'Your exam is cancelled due to malicious activity.',
+        confirmButtonText: 'Okay',
+        background: '#fff',
+        iconColor: '#ff4d4d', // Custom color for the icon
+        customClass: {
+          title: 'alert-title',
+          text: 'alert-text',
+          confirmButton: 'alert-button'
+        }
+      });
+    }
+  </script>
 </head>
-<br><br>
+
 <div class="container">
   <div class="panel panel-primary">
     <div class="panel-heading">
       <h6 class="panel-title">Available Courses</h6>
     </div>
-    <table class="table table-hover table-bordered" id="dev-table">
-      <thead>
-        <tr>
-          <th>Exam Name</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for t in courses %}
-        <tr>
-          <td>{{ t.course_name }}</td>
-          <td>
-            <a class="btn btn-success btn-sm mt-2" href="{% url 'capture-image' t.id %}">
-              <span class="glyphicon glyphicon-camera"></span> Attend Exam
-            </a>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+    <div class="panel-body">
+      <table class="table table-hover table-bordered" id="dev-table">
+        <thead>
+          <tr>
+            <th>Exam Name</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for t in courses %}
+          <tr>
+            <td>{{ t.course_name }}</td>
+            <td>
+              {% if t.id in canceled_courses %}
+                <button class="btn btn-danger" onclick="showCancelledAlert()">
+                  <span class="glyphicon glyphicon-ban-circle"></span> Cancelled
+                </button>
+              {% else %}
+                <a class="btn btn-success" href="{% url 'capture-image' t.id %}">
+                  <span class="glyphicon glyphicon-camera"></span> Attend Exam
+                </a>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 
-<br><br><br><br><br><br>
+<div class="footer">
+  &copy; {{ current_year }} Your Institution. All rights reserved.
+</div>
+
 {% endblock content %}

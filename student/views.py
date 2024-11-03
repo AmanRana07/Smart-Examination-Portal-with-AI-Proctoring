@@ -82,8 +82,29 @@ def student_dashboard_view(request):
 @login_required(login_url="studentlogin")
 @user_passes_test(is_student)
 def student_exam_view(request):
-    courses = QMODEL.Course.objects.all()
-    return render(request, "student/student_exam.html", {"courses": courses})
+    courses = Course.objects.all()
+    canceled_courses = {}
+
+    # Get all exam sessions for the logged-in student
+    exam_sessions = ExamSession.objects.filter(student=request.user.student)
+
+    # Create a list of canceled course IDs
+    canceled_course_ids = exam_sessions.filter(cancellation_flag=True).values_list(
+        "course_id", flat=True
+    )
+
+    # Pass the canceled course IDs as a set for faster lookup
+    canceled_courses = set(canceled_course_ids)
+
+    print(canceled_courses)
+    return render(
+        request,
+        "student/student_exam.html",
+        {
+            "courses": courses,
+            "canceled_courses": canceled_courses,
+        },
+    )
 
 
 @login_required(login_url="studentlogin")
