@@ -250,6 +250,8 @@ def remove_question_view(request, pk):
     return HttpResponseRedirect("/teacher/teacher-view-question")
 
 
+@login_required(login_url="teacherlogin")
+@user_passes_test(is_teacher)
 def download_questions_template(request):
     # Create a CSV response
     response = HttpResponse(content_type="text/csv")
@@ -299,6 +301,7 @@ def download_questions_template(request):
 
 
 @login_required(login_url="teacherlogin")
+@user_passes_test(is_teacher)
 def teacher_view_student_view(request):
     # Get the current teacher
     teacher = request.user
@@ -327,6 +330,7 @@ def teacher_view_student_view(request):
 
 
 @login_required(login_url="teacherlogin")
+@user_passes_test(is_teacher)
 def student_view(request):
     # Get the current teacher
     # Get the current teacher
@@ -355,6 +359,8 @@ def student_view(request):
     return render(request, "teacher/teacher_view_student.html", context)
 
 
+@login_required
+@user_passes_test(is_teacher)
 def teacher_view_student_marks(request, student_id):
     # Get the current teacher
     teacher = request.user
@@ -378,3 +384,70 @@ def teacher_view_student_marks(request, student_id):
     }
 
     return render(request, "teacher/teacher_student_marks.html", context)
+
+
+@login_required
+@user_passes_test(is_teacher)
+def chat_view(request, session_id):
+    # Fetch the exam session by ID
+    exam_session = get_object_or_404(QMODEL.ExamSession, id=session_id)
+
+    # Get the course related to this exam session
+    course = exam_session.course
+
+    # Check if the logged-in teacher is the creator of the course
+    if request.user != course.creator:
+        # Optionally, handle unauthorized access
+        return render(
+            request, "teacher/unauthorized.html"
+        )  # Redirect or show an error message
+
+    if request.method == "POST":
+        message_content = request.POST.get("message")
+
+        # Create a new chat message associated with the exam session
+        QMODEL.ChatMessage.objects.create(
+            session=exam_session,
+            sender=request.user,  # The logged-in proctor
+            message=message_content,
+        )
+        return redirect(
+            "chat_view", session_id=session_id
+        )  # Redirect to see the new message
+
+    context = {
+        "exam_session": exam_session,
+    }
+    return render(request, "teacher/chat_view.html", context)
+
+
+@login_required
+@user_passes_test(is_teacher)
+def course_sessions_view(request, course_id):
+    course = get_object_or_404(QMODEL.Course, id=course_id)
+    active_sessions = QMODEL.ExamSession.objects.filter(course=course, is_active=True)
+
+    context = {
+        "course": course,
+        "active_sessions": active_sessions,
+    }
+    return render(request, "teacher/course_sessions_view.html", context)
+
+
+@login_required
+@user_passes_test(is_teacher)
+def send_message(request, session_id):
+    exam_session = get_object_or_404(QMODEL.ExamSession, id=session_id)
+
+    if request.method == "POST":
+        message_content = request.POST.get("message")
+        QMODEL.ChatMessage.objects.create(
+            session=exam_session,
+            sender=request.user,  # Assuming the logged-in user is the sender
+            message=message_content,
+        )
+        return redirect(
+            "chat_view", session_id=session_id
+        )  # Redirect back to the chat view
+
+    return redirect("chat_view", session_id=session_id)

@@ -40,6 +40,8 @@
                     <a href="{% url 'delete-exam' course.id %}" class="btn btn-danger" style="border-radius:0px;"
                         onclick="return confirm('Are you sure you want to delete this course?');">Delete</a>
                 </td>
+                <td><p><a href="{% url 'course_sessions_view' course.id %}">View Active Sessions for {{ course.course_name }}</a></p>
+                </td>
             </tr>
             {% empty %}
             <tr>

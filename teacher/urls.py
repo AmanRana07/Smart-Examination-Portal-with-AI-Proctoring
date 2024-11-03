@@ -65,4 +65,11 @@ urlpatterns = [
         views.teacher_view_student_marks,
         name="teacher-view-student-marks",
     ),
+    path("chat/<int:session_id>/", views.chat_view, name="chat_view"),
+    path(
+        "course/<int:course_id>/sessions/",
+        views.course_sessions_view,
+        name="course_sessions_view",
+    ),
+    path("send_message/<int:session_id>/", views.send_message, name="send_message"),
 ]
