@@ -23,18 +23,43 @@
           {% csrf_token %}
           <h1 class="text-3xl text-center text-white font-semibold">Teacher Login Panel</h1>
 
-          <div class="space-y-4">
-            <div>
-              {% render_field form.username class="w-full p-3 bg-gray-700 border border-gray-600 text-white rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500" autocomplete="off" placeholder="Username" %}
+          <!-- General Errors (e.g., '__all__') -->
+          {% if form.non_field_errors %}
+            <div class="bg-red-600 text-white p-4 rounded-md my-4">
+              <ul>
+                {% for error in form.non_field_errors %}
+                  <li class="text-sm">{{ error }}</li>
+                {% endfor %}
+              </ul>
             </div>
+          {% endif %}
 
-            <div>
-              {% render_field form.password class="w-full p-3 bg-gray-700 border border-gray-600 text-white rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500" autocomplete="off" placeholder="Password" %}
-            </div>
+          <div>
+            <!-- Username Field -->
+            {% if form.username.errors %}
+              <div class="bg-red-600 text-white p-2 rounded-md my-2">
+                {% for error in form.username.errors %}
+                  <p class="text-sm">{{ error }}</p>
+                {% endfor %}
+              </div>
+            {% endif %}
+            {% render_field form.username class="w-full p-3 bg-gray-700 border border-gray-600 text-white rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500" autocomplete="off" placeholder="Username" %}
+          </div>
 
-            <div class="flex justify-center">
-              <input type="submit" value="Login" class="w-full p-3 bg-green-500 text-white font-semibold rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 cursor-pointer transition duration-200">
-            </div>
+          <div>
+            <!-- Password Field -->
+            {% if form.password.errors %}
+              <div class="bg-red-600 text-white p-2 rounded-md my-2">
+                {% for error in form.password.errors %}
+                  <p class="text-sm">{{ error }}</p>
+                {% endfor %}
+              </div>
+            {% endif %}
+            {% render_field form.password class="w-full p-3 bg-gray-700 border border-gray-600 text-white rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500" autocomplete="off" placeholder="Password" %}
+          </div>
+
+          <div class="flex justify-center">
+            <input type="submit" value="Login" class="w-full p-3 bg-green-500 text-white font-semibold rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 cursor-pointer transition duration-200">
           </div>
         </form>
       </div>

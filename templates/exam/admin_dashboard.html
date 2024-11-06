@@ -8,11 +8,24 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+   <!-- DataTables CSS and JS -->
+   <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+   <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
   <style type="text/css">
     a:link {
       text-decoration: none;
     }
+/* Custom Table Header */
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+      padding: 5px 10px;
+      margin: 3px;
+    }
 
+    /* Custom Table Styling */
+    .dataTables_wrapper .dataTables_filter input {
+      border-radius: 5px;
+      padding: 5px;
+    }
     .order-card {
       color: #fff;
       border-radius: 10px;
@@ -99,10 +112,27 @@
 
     <div class="col-md-6 mt-4">
       <h4 class="text-center">Violations by Students</h4>
-      <div class="chart-container">
-        <canvas id="violationChart"></canvas>
+      <div class="table-responsive chart-container">
+        <table id="violationsTable" class="table table-bordered table-striped display">
+          <thead class="thead-dark">
+            <tr>
+              <th>Student Name</th>
+              <th>Violation Count</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for student, count in violations_by_student %}
+            <tr>
+              <td>{{ student }}</td>
+              <td>{{ count }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
       </div>
     </div>
+  </div>
+    
   </div>
 
   <div class="row">
@@ -143,20 +173,20 @@
   });
 
   // Violation Chart
-  new Chart(document.getElementById('violationChart').getContext('2d'), {
-    type: 'bar',
-    data: {
-      labels: {{ violation_labels|safe }},
-      datasets: [{
-        label: 'Violations',
-        data: {{ violation_values|safe }},
-        backgroundColor: 'rgba(255, 99, 132, 0.5)',
-        borderColor: 'rgba(255, 99, 132, 1)',
-        borderWidth: 1
-      }]
-    },
-    options: { responsive: true, scales: { y: { beginAtZero: true } } }
-  });
+  // new Chart(document.getElementById('violationChart').getContext('2d'), {
+  //   type: 'bar',
+  //   data: {
+  //     labels: {{ violation_labels|safe }},
+  //     datasets: [{
+  //       label: 'Violations',
+  //       data: {{ violation_values|safe }},
+  //       backgroundColor: 'rgba(255, 99, 132, 0.5)',
+  //       borderColor: 'rgba(255, 99, 132, 1)',
+  //       borderWidth: 1
+  //     }]
+  //   },
+  //   options: { responsive: true, scales: { y: { beginAtZero: true } } }
+  // });
 
   // Performance vs. Violations Chart
   new Chart(document.getElementById('performanceVsViolationsChart').getContext('2d'), {
@@ -206,6 +236,27 @@
       }]
     },
     options: { responsive: true }
+  });
+</script>
+<script>
+  // Initialize DataTables
+  $(document).ready(function() {
+    $('#violationsTable').DataTable({
+      "paging": true,
+      "lengthChange": false,
+      "searching": true,
+      "ordering": true,
+      "info": true,
+      "autoWidth": false,
+      "pageLength": 5,
+      "language": {
+        "search": "Search Student:",
+        "paginate": {
+          "previous": "<i class='fas fa-chevron-left'></i>",
+          "next": "<i class='fas fa-chevron-right'></i>"
+        }
+      }
+    });
   });
 </script>
 

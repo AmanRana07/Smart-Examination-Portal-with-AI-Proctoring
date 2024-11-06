@@ -69,6 +69,8 @@ def is_student(user):
 #     logout(request)
 #     return redirect("studentlogin")
 
+from django.db.models import Count
+
 
 @login_required(login_url="studentlogin")
 @user_passes_test(is_student)
@@ -87,14 +89,23 @@ def student_dashboard_view(request):
         results.filter(exam=course).aggregate(Avg("marks"))["marks__avg"] or 0
         for course in courses
     ]
+    exam_sessions = ExamSession.objects.filter(student=student)
 
     # Violation Trends Across Exams
     violations = (
-        ExamSession.objects.filter(student=student)
-        .values("course__course_name")
-        .annotate(violation_count=Sum("suspicious_activity_count"))
+        Violation.objects.filter(
+            session__in=exam_sessions
+        )  # Filter violations related to the student's exam sessions
+        .values("session__course__course_name")  # Get course name through the session
+        .annotate(
+            violation_count=Count("id")
+        )  # Count the number of violations for each course
     )
-    violation_courses = [violation["course__course_name"] for violation in violations]
+
+    # Extract course names and violation counts
+    violation_courses = [
+        violation["session__course__course_name"] for violation in violations
+    ]
     violation_counts = [violation["violation_count"] for violation in violations]
 
     # Average Time Spent on Each Exam

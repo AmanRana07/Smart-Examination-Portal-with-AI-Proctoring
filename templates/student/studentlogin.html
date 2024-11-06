@@ -20,15 +20,43 @@
 
         <form method="post" class="space-y-6">
           {% csrf_token %}
-          
+
+          <!-- General Errors (e.g., '__all__') -->
+          {% if form.non_field_errors %}
+            <div class="bg-red-600 text-white p-4 rounded-md my-4">
+              <ul>
+                {% for error in form.non_field_errors %}
+                  <li class="text-sm">{{ error }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+          {% endif %}
+
+          <!-- Username Field -->
           <div class="space-y-2">
-            <input type="text" name="username" class="w-full p-3 text-center text-lg rounded-md border-2 border-gray-500 bg-transparent text-white focus:outline-none focus:ring-2 focus:ring-[#4caf50]" autocomplete="off" placeholder="Username">
+            {% if form.username.errors %}
+              <div class="bg-red-600 text-white p-2 rounded-md my-2">
+                {% for error in form.username.errors %}
+                  <p class="text-sm">{{ error }}</p>
+                {% endfor %}
+              </div>
+            {% endif %}
+            {% render_field form.username class="w-full p-3 text-center text-lg rounded-md border-2 border-gray-500 bg-transparent text-white focus:outline-none focus:ring-2 focus:ring-[#4caf50]" autocomplete="off" placeholder="Username" %}
           </div>
           
+          <!-- Password Field -->
           <div class="space-y-2">
-            <input type="password" name="password" class="w-full p-3 text-center text-lg rounded-md border-2 border-gray-500 bg-transparent text-white focus:outline-none focus:ring-2 focus:ring-[#4caf50]" autocomplete="off" placeholder="Password">
+            {% if form.password.errors %}
+              <div class="bg-red-600 text-white p-2 rounded-md my-2">
+                {% for error in form.password.errors %}
+                  <p class="text-sm">{{ error }}</p>
+                {% endfor %}
+              </div>
+            {% endif %}
+            {% render_field form.password class="w-full p-3 text-center text-lg rounded-md border-2 border-gray-500 bg-transparent text-white focus:outline-none focus:ring-2 focus:ring-[#4caf50]" autocomplete="off" placeholder="Password" %}
           </div>
 
+          <!-- Login Button -->
           <div class="flex justify-center">
             <button type="submit" class="w-full py-3 text-lg font-semibold text-white bg-[#4caf50] rounded-md hover:bg-[#347736] transition duration-300">Login</button>
           </div>

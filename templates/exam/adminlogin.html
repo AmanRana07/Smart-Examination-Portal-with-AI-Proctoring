@@ -35,13 +35,40 @@
 
         <form method="post" class="space-y-6">
           {% csrf_token %}
-          
+
+          <!-- General Errors (e.g., '__all__') -->
+          {% if form.non_field_errors %}
+            <div class="bg-red-600 text-white p-4 rounded-md my-4">
+              <ul>
+                {% for error in form.non_field_errors %}
+                  <li class="text-sm">{{ error }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+          {% endif %}
+
+          <!-- Username Field -->
           <div class="mb-4">
+            {% if form.username.errors %}
+              <div class="bg-red-600 text-white p-2 rounded-md my-2">
+                {% for error in form.username.errors %}
+                  <p class="text-sm">{{ error }}</p>
+                {% endfor %}
+              </div>
+            {% endif %}
             <label for="username" class="text-white text-sm font-medium">Username</label>
             {% render_field form.username class="form-input w-full p-3 bg-gray-800 text-white placeholder-gray-400 focus:outline-none" placeholder="Username" %}
           </div>
           
+          <!-- Password Field -->
           <div class="mb-4">
+            {% if form.password.errors %}
+              <div class="bg-red-600 text-white p-2 rounded-md my-2">
+                {% for error in form.password.errors %}
+                  <p class="text-sm">{{ error }}</p>
+                {% endfor %}
+              </div>
+            {% endif %}
             <label for="password" class="text-white text-sm font-medium">Password</label>
             {% render_field form.password class="form-input w-full p-3 bg-gray-800 text-white placeholder-gray-400 focus:outline-none" placeholder="Password" %}
           </div>

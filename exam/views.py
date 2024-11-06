@@ -26,7 +26,7 @@ import datetime
 from django.db.models import Count, Avg
 from .forms import CourseForm
 from .models import Course
-
+from django.conf import settings
 
 # Load the spaCy model
 nlp = spacy.load("en_core_web_sm")
@@ -94,6 +94,12 @@ def admin_dashboard_view(request):
     ]
     violation_counts = [violation["count"] for violation in violations]
 
+    violations_by_student = [
+        (User.objects.get(id=violation["user"]).username, violation["count"])
+        for violation in violations
+        if User.objects.filter(id=violation["user"]).exists()
+    ]
+
     # Prepare data for the performance vs. violations chart
     student_performance = models.Result.objects.values("student").annotate(
         avg_marks=Avg("marks")
@@ -112,7 +118,7 @@ def admin_dashboard_view(request):
     violation_values = []
 
     for student_id, avg_marks in performance_dict.items():
-        performance_labels.append(User.objects.get(id=student_id).username)
+        # performance_labels.append(User.objects.get(id=student_id).username)
         performance_values.append(avg_marks)
         violation_values.append(student_violation_counts.get(student_id, 0))
 
@@ -143,6 +149,7 @@ def admin_dashboard_view(request):
         "performance_values": performance_values,
         "violation_values": violation_values,
         "voilation_messages": voilation_messages,
+        "violations_by_student": violations_by_student,
     }
 
     return render(request, "exam/admin_dashboard.html", context=context)
@@ -205,16 +212,37 @@ def admin_view_pending_teacher_view(request):
 @login_required(login_url="adminlogin")
 def approve_teacher_view(request, pk):
     teacherSalary = forms.TeacherSalaryForm()
+
     if request.method == "POST":
         teacherSalary = forms.TeacherSalaryForm(request.POST)
+
         if teacherSalary.is_valid():
+            # Fetch the teacher object
             teacher = TMODEL.Teacher.objects.get(id=pk)
+
+            # Update the teacher's salary and status
             teacher.salary = teacherSalary.cleaned_data["salary"]
             teacher.status = True
             teacher.save()
+
+            # Send an email to the teacher after approval
+            subject = "Your Salary has been Approved!"
+            message = f"Dear {teacher.user.first_name},\n\nYour salary has been successfully approved. You can now log in to the platform using your credentials and access the system. We are excited to have you as part of the team!\n\nBest regards,\nThe Admin Team"
+            from_email = (
+                settings.DEFAULT_FROM_EMAIL
+            )  # You can set this in your settings.py
+
+            try:
+                send_mail(subject, message, from_email, [teacher.email])
+                print(f"Approval email sent to {teacher.email}")
+            except Exception as e:
+                print(f"Error sending email: {e}")
+
+            # Redirect to the admin view after approval
+            return HttpResponseRedirect("/admin-view-pending-teacher")
         else:
-            print("form is invalid")
-        return HttpResponseRedirect("/admin-view-pending-teacher")
+            print("Form is invalid")
+
     return render(request, "exam/salary_form.html", {"teacherSalary": teacherSalary})
 
 

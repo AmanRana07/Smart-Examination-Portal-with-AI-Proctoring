@@ -40,24 +40,32 @@
 
 
     .logout_btn {
-      padding: 5px;
-      background: #ef5350;
-      text-decoration: none;
-      float: right;
-      margin-top: -30px;
-      margin-right: 40px;
-      border-radius: 2px;
-      font-size: 15px;
-      font-weight: 600;
-      color: #fff;
-      transition: 0.5s;
+    padding: 10px 20px;
+    background: #ef5350;
+    text-decoration: none;
+    float: right;
+    margin-top: -30px;
+    margin-right: 40px;
+    border-radius: 30px; /* Rounded corners for a more modern look */
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    text-transform: uppercase; /* Adds a more professional, bold appearance */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+    transition: all 0.3s ease; /* Smooth transition */
+    display: inline-block;
+}
 
-    }
+.logout_btn:hover {
+    background: #ca4745; /* Darker red for hover effect */
+    transform: translateY(-3px); /* Slight lift effect */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Stronger shadow on hover */
+}
 
-    .logout_btn:hover {
-      background:#ca4745;
-    }
-
+.logout_btn:active {
+    background: #b23c3f; /* Even darker shade when clicked */
+    transform: translateY(0); /* Remove lift effect when clicked */
+}
     .sidebar {
       background: #2f323a;
       margin-top: 70px;
@@ -204,7 +212,7 @@
 
 
     <br><br><br>
-    {% include "exam/footer.html" %}
+    <!-- {% include "exam/footer.html" %} -->
   </div>
   <!--content end-->
 </body>
