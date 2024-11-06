@@ -5,37 +5,51 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Welcome to Online Examination System</title>
 
-  <style media="screen">
-    .jumbotron {
-      margin-top: 0px;
-      margin-bottom: 0px;
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .bg-custom {
+      background: linear-gradient(to bottom, #d7d2cc, #304352); /* Add gradient background */
     }
 
-    .jumbotron h1 {
+    .jumbotron-custom {
+      background-color: #212529;
+      border-radius: 15px;
+      padding: 60px;
       text-align: center;
+      color: white;
     }
 
-  </style>
+    .btn-custom {
+      transition: background-color 0.3s ease;
+    }
 
+    .btn-custom:hover {
+      background-color: #347736;
+    }
+  </style>
 </head>
 
-<body>
-
+<body class="bg-custom">
   {% include "exam/navbar.html" %}
-  <br><br>
-  <div class="jumbotron" style="margin-bottom:0px;">
-    <h1 class="display-4">Hello Student,</h1>
-    <p class="lead">and Welcome to Online Examination System</p>
-    <hr class="my-4">
-    <p>Select any of them to access into the system</p>
-    <p class="lead">
-      <a class="btn btn-primary " href="studentsignup" style="border-radius: 0%;" role="button">Create Your Account</a>
-      <a class="btn btn-success " href="studentlogin" style="border-radius: 0%;" role="button">Login Now</a>
-    </p>
-    <br><br><br><br><br><br>
+  
+  <div class="flex justify-center items-center min-h-screen">
+    <div class="jumbotron-custom w-full max-w-3xl mx-6">
+      <h1 class="text-5xl font-extrabold mb-4 text-[#17a2b8]">Hello Student,</h1>
+      <p class="text-xl mb-6 text-gray-300">Welcome to the Online Examination System, where you can access all your exams, track your progress, and improve your performance with the right tools.</p>
+      <hr class="my-4 border-gray-500">
+      <p class="text-lg mb-6 text-gray-300">Select any option to begin your journey with us:</p>
+
+      <div class="flex justify-center gap-6">
+        <a href="studentsignup" class="btn-custom px-8 py-3 bg-[#17a2b8] text-white rounded-lg text-lg">Create Your Account</a>
+        <a href="studentlogin" class="btn-custom px-8 py-3 bg-teal-600 text-white rounded-lg text-lg">Login Now</a>
+      </div>
+
+      <p class="mt-8 text-gray-400">If you are a teacher or admin, please use the separate portal to manage the system.</p>
+    </div>
   </div>
- 
+
   {% include "exam/footer.html" %}
 </body>
 

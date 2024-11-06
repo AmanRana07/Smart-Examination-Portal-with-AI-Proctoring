@@ -3,6 +3,7 @@
 <html lang="en" dir="ltr">
 
 <head>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .jumbotron {
             margin-bottom: 0px;
@@ -234,26 +235,146 @@
         
         
     </style>
+    <style>
+        /* Hover Effects for Features */
+        .feature:hover .fa,
+        .feature:hover h4,
+        .feature:hover p {
+          color: white !important;
+        }
+        
+        .feature:hover {
+          background-color: #17a2b8 !important;
+          transform: scale(1.05);
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+        #features i{
+            font-size: 42px!important;
+        }
+      </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 
 <body>
     {% include "exam/navbar.html" %}
-    <br>
-    <section id="section-jumbotron" class="jumbotron jumbotron-fluid d-flex justify-content-center align-items-center">
-        <div class="container text-center">
-            <h2 class="display-3 text-info">TestMate</h2>
-            <p class="display-4 d-none d-sm-block">Attend your examinations online!</p>
-            <p class="lead">Sign up now to give your first online examination</p>
-
-            <p><strong> Start Your Journey Here:</strong></p>
-            <a href="/student/studentsignup" class="btn btn-lg btn-info"
-                style="padding-right: 35px; border-radius: 0%;"><i class="fa fa-graduation-cap"
-                    aria-hidden="true"></i> Sign Up as Student</a>
-
-            <br><br><br>
+  
+    <section id="section-jumbotron" class="bg-gradient-to-r from-[#17a2b8] to-teal-600 h-screen flex justify-center items-center text-white px-6 relative overflow-hidden">
+        <!-- Parallax Effect -->
+        <div class="absolute top-0 left-0 w-full h-full bg-fixed bg-cover bg-center opacity-40" style="background-image: url('https://www.example.com/your-image.jpg');"></div>
+      
+        <div class="text-center z-10 relative">
+          <!-- Main Heading -->
+          <h2 class="text-5xl md:text-6xl font-extrabold mb-4 text-shadow-lg animate__animated animate__fadeIn animate__delay-1s">
+            TestMate
+          </h2>
+      
+          <!-- Subheading -->
+          <p class="text-xl md:text-2xl mb-4 hidden sm:block text-opacity-80 animate__animated animate__fadeIn animate__delay-1s">
+            The Future of Online Examinations
+          </p>
+      
+          <!-- Description -->
+          <p class="text-lg md:text-xl font-light mb-6 text-opacity-90 animate__animated animate__fadeIn animate__delay-2s">
+            Sign up now to start your online exam journey. Whether you're a student or a teacher, TestMate simplifies the exam process with ease and security.
+          </p>
+      
+          <!-- Sign-Up Button -->
+          <div class="mb-8 animate__animated animate__fadeIn animate__delay-2s">
+            <a href="/student/studentsignup" class="inline-block px-8 py-3 text-lg font-semibold text-white bg-[#17a2b8] rounded-full transition-transform transform hover:scale-110 hover:bg-teal-600 hover:shadow-xl hover:shadow-[#17a2b8] focus:outline-none focus:ring-4 focus:ring-teal-500 focus:ring-opacity-50">
+              <i class="fa fa-graduation-cap mr-2" aria-hidden="true"></i> Sign Up as Student
+            </a>
+          </div>
+      
+          <!-- For Teachers Section -->
+          <div class="mt-8 animate__animated animate__fadeIn animate__delay-3s">
+            <p class="text-lg font-medium text-white mb-4">Ready to manage exams and assessments?</p>
+            <a href="/teacher/teacherclick" class="inline-block px-6 py-3 text-lg font-semibold text-[#17a2b8] bg-white border-2 border-[#17a2b8] rounded-full transition-transform transform hover:scale-110 hover:bg-[#17a2b8] hover:text-white hover:shadow-xl hover:shadow-[#17a2b8] focus:outline-none focus:ring-4 focus:ring-teal-500 focus:ring-opacity-50">
+              For Teachers - Manage Your Exams
+            </a>
+          </div>
         </div>
-    </section>
+      </section>
+      
+      <!-- Features Section -->
+      <section id="features" class="py-24 bg-gray-100" data-aos="fade-up">
+        <div class="container mx-auto text-center">
+          <h3 class="text-4xl font-semibold text-[#17a2b8] mb-6 animate__animated animate__fadeIn animate__delay-1s">Why Choose TestMate?</h3>
+          <p class="text-lg font-light mb-12 animate__animated animate__fadeIn animate__delay-2s">Discover the key features that make TestMate the best platform for online examinations.</p>
+      
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
+            <!-- Feature 1 -->
+            <div class="feature bg-white p-8 rounded-lg shadow-xl transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:bg-[#17a2b8] hover:text-white">
+              <i class="fa fa-lock text-6xl text-[#17a2b8] mb-4 transition-all duration-300"></i>
+              <h4 class="text-xl font-semibold text-[#17a2b8] mb-2 transition-all duration-300">Secure & Reliable</h4>
+              <p class="text-gray-600 transition-all duration-300">TestMate ensures that all your exams are conducted in a secure environment with advanced fraud detection methods.</p>
+            </div>
+            <!-- Feature 2 -->
+            <div class="feature bg-white p-8 rounded-lg shadow-xl transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:bg-[#17a2b8] hover:text-white">
+              <i class="fa fa-clock text-6xl text-[#17a2b8] mb-4 transition-all duration-300"></i>
+              <h4 class="text-xl font-semibold text-[#17a2b8] mb-2 transition-all duration-300">Time Management</h4>
+              <p class="text-gray-600 transition-all duration-300">Real-time timers and easy-to-use exam scheduling tools help both teachers and students manage time efficiently.</p>
+            </div>
+            <!-- Feature 3 -->
+            <div class="feature bg-white p-8 rounded-lg shadow-xl transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:bg-[#17a2b8] hover:text-white">
+              <i class="fa fa-chart-line text-6xl text-[#17a2b8] mb-4 transition-all duration-300"></i>
+              <h4 class="text-xl font-semibold text-[#17a2b8] mb-2 transition-all duration-300">Analytics & Reports</h4>
+              <p class="text-gray-600 transition-all duration-300">Detailed analytics and instant reporting features to assess student performance effectively.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+  
+  
+  
+  
+  
+      
+      <!-- Testimonials Section -->
+      <section id="testimonials" class="py-24 bg-gray-800 text-white">
+        <div class="container mx-auto text-center">
+          <h3 class="text-4xl font-semibold text-[#17a2b8] mb-6 animate__animated animate__fadeIn animate__delay-1s">What Our Users Say</h3>
+          <p class="text-lg font-light mb-12 animate__animated animate__fadeIn animate__delay-2s">Hear from teachers and students who have experienced TestMate firsthand.</p>
+          
+          <div class="flex flex-wrap justify-center gap-12">
+            <!-- Testimonial 1 -->
+            <div class="w-full sm:w-1/3 p-6 bg-gray-700 rounded-lg shadow-xl transform hover:scale-105 transition-all duration-300">
+              <p class="text-xl italic text-gray-300 mb-4">"TestMate made conducting online exams seamless and efficient. It saved me so much time!"</p>
+              <p class="font-bold text-[#17a2b8]">John Doe</p>
+              <p class="text-sm text-gray-400">Teacher</p>
+            </div>
+            <!-- Testimonial 2 -->
+            <div class="w-full sm:w-1/3 p-6 bg-gray-700 rounded-lg shadow-xl transform hover:scale-105 transition-all duration-300">
+              <p class="text-xl italic text-gray-300 mb-4">"As a student, I love the real-time results and feedback I get after every exam!"</p>
+              <p class="font-bold text-[#17a2b8]">Jane Smith</p>
+              <p class="text-sm text-gray-400">Student</p>
+            </div>
+            <!-- Testimonial 3 -->
+            <div class="w-full sm:w-1/3 p-6 bg-gray-700 rounded-lg shadow-xl transform hover:scale-105 transition-all duration-300">
+              <p class="text-xl italic text-gray-300 mb-4">"TestMate has transformed the way I handle exams. Highly recommended for all teachers!"</p>
+              <p class="font-bold text-[#17a2b8]">Sarah Lee</p>
+              <p class="text-sm text-gray-400">Teacher</p>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Get Started Section -->
+      <section id="get-started" class="bg-gradient-to-r from-[#17a2b8] to-teal-600 py-24 text-white">
+        <div class="container mx-auto text-center">
+          <h3 class="text-4xl font-semibold mb-6 animate__animated animate__fadeIn animate__delay-1s">Get Started with TestMate Today</h3>
+          <p class="text-lg mb-8 animate__animated animate__fadeIn animate__delay-2s">Create your account now and start experiencing the future of online examinations.</p>
+          <div class="space-x-4">
+            <a href="/student/studentsignup" class="inline-block px-8 py-3 text-lg font-semibold text-white bg-[#17a2b8] rounded-full transition-transform transform hover:scale-110 hover:bg-teal-600 mb-4 focus:outline-none focus:ring-4 focus:ring-teal-500 focus:ring-opacity-50">
+              <i class="fa fa-user-plus mr-2" aria-hidden="true"></i> Student Sign Up
+            </a>
+            <a href="/teacher/teacherclick" class="inline-block px-8 py-3 text-lg font-semibold text-[#17a2b8] bg-white border-2 border-[#17a2b8] rounded-full transition-transform transform hover:scale-110 hover:bg-[#17a2b8] hover:text-white focus:outline-none focus:ring-4 focus:ring-teal-500 focus:ring-opacity-50">
+              Teacher Sign Up
+            </a>
+          </div>
+        </div>
+      </section>
+      
+      
     {% include "exam/footer.html" %}
 
     <!-- Chatbot Container -->

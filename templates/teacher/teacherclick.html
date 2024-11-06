@@ -5,37 +5,68 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-  <style media="screen">
-    .jumbotron {
-      margin-top: 0px;
-      margin-bottom: 0px;
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Custom styles for hover effect */
+    .card {
+      transition: all 0.3s ease-in-out;
     }
 
-    .jumbotron h1 {
-      text-align: center;
+    .card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     }
 
+    .gradient-bg {
+      background: linear-gradient(135deg, #17a2b8 0%, #008c96 100%);
+    }
   </style>
-
 </head>
 
-<body>
+<body class="bg-gray-100">
 
   {% include "exam/navbar.html" %}
-  <br><br>
-  <div class="jumbotron" style="margin-bottom:0px;">
-    <h1 class="display-4">Hello Teacher,</h1>
-    <p class="lead">and Welcome to Online Examination System</p>
-    <hr class="my-4">
-    <p>Select any of them to access into the system</p>
-    <p class="lead">
-      <a class="btn btn-primary" style="border-radius:0px;" href="teachersignup" role="button">Create Your Account</a>
-      <a class="btn btn-success" style="border-radius:0px;" href="teacherlogin" role="button">Login Now</a>
-    </p>
-    <br><br><br><br>
-  </div>
+  
+  <!-- Jumbotron Section -->
+  <section class="flex items-center justify-center bg-gradient-to-r from-[#17a2b8] to-teal-500 text-center py-24 px-6">
+    <div class="max-w-2xl w-full bg-white p-10 rounded-lg shadow-xl">
+      <h1 class="text-4xl font-bold text-[#17a2b8] mb-6">Hello Teacher,</h1>
+      <p class="text-xl font-light text-gray-700 mb-8">Welcome to the Online Examination System! This platform provides you with all the tools you need to manage, conduct, and monitor exams seamlessly and securely.</p>
+      
+      <hr class="border-t-2 border-[#17a2b8] my-6 mx-auto w-32">
+      
+      <p class="text-lg text-gray-600 mb-8">Select an option below to get started:</p>
+      
+      <div class="flex justify-center gap-6">
+        <a href="teachersignup" class="inline-block px-8 py-4 text-lg font-semibold text-white bg-[#17a2b8] rounded-full shadow-lg transition-all duration-300 transform hover:scale-105 hover:bg-teal-600">Create Your Account</a>
+        <a href="teacherlogin" class="inline-block px-8 py-4 text-lg font-semibold text-[#17a2b8] bg-white border-2 border-[#17a2b8] rounded-full shadow-lg transition-all duration-300 transform hover:scale-105 hover:bg-[#17a2b8] hover:text-white">Login Now</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Choose Us Section -->
+  <section class="py-16 px-6 bg-gray-50 text-center">
+    <h2 class="text-3xl font-bold text-[#17a2b8] mb-8">Why Choose Our Online Examination System?</h2>
+    <p class="text-lg text-gray-600 mb-12">Our system is designed to be simple, secure, and scalable for all your teaching needs. With real-time monitoring, easy grading, and flexible settings, you'll have complete control over your exams.</p>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div class="card bg-gradient-to-r from-[#17a2b8] via-teal-500 to-teal-600 p-6 rounded-lg shadow-md text-white">
+        <h3 class="text-xl font-semibold mb-2">Secure Exams</h3>
+        <p class="text-gray-100">Our platform ensures that your exams are secure with real-time proctoring and automated cheating detection.</p>
+      </div>
+      <div class="card bg-gradient-to-r from-[#17a2b8] via-teal-500 to-teal-600 p-6 rounded-lg shadow-md text-white">
+        <h3 class="text-xl font-semibold mb-2">Real-Time Analytics</h3>
+        <p class="text-gray-100">Get real-time data about your students' performance and analytics during exams.</p>
+      </div>
+      <div class="card bg-gradient-to-r from-[#17a2b8] via-teal-500 to-teal-600 p-6 rounded-lg shadow-md text-white">
+        <h3 class="text-xl font-semibold mb-2">Easy Access</h3>
+        <p class="text-gray-100">Access your dashboard and exam features anytime, anywhere, from any device.</p>
+      </div>
+    </div>
+  </section>
+
   {% include "exam/footer.html" %}
+  
 </body>
 
 </html>

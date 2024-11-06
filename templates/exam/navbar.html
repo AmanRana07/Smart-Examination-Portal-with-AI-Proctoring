@@ -4,60 +4,45 @@
 
 <head>
   <meta charset="utf-8">
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-
-  <style type="text/css">
-    .bs-example {
-      margin: 0px;
-
-    }
-    .bg-dark {
-    background-color: #212529!important;
-}
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Optional custom styles */
     .navbar-brand {
       font-size: 20px;
       font-family: sans-serif;
-
     }
   </style>
 </head>
 
-<body>
+<body class="bg-gray-800">
 
-
-
-  <div class="bs-example">
-    <nav class="navbar navbar-expand-md  navbar-dark fixed-top" style="background-color: #212529;">
-    <a style="color: #ffffff;text-decoration: none; " href="/"><font face = "verdana" size =" 5">TestMate</font><br /></a>  
-      <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-      <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
-        <div class="navbar-nav">
-    
+  <!-- Navbar -->
+  <nav class="bg-gray-900 navbar-expand-md navbar-dark fixed-top">
+    <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
+      <div class="relative flex items-center justify-between h-16">
+        <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
+          <button type="button" class="inline-flex items-center justify-center p-2 rounded-md text-white hover:text-gray-400 hover:bg-gray-700 focus:outline-none focus:bg-gray-700 focus:text-white transition duration-150 ease-in-out" aria-label="Main menu" aria-expanded="false">
+            <span class="sr-only">Open main menu</span>
+            <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+          </button>
         </div>
-
-        <div class="navbar-nav">
-          <a style="padding-left: 30px;" href="/" class="nav-item nav-link"> Home</a>
-          <a href="/teacher/teacherclick" class="nav-item nav-link">Teacher</a>
-          <a href="/student/studentclick" class="nav-item nav-link">Student</a>
-          <a href="/adminclick" class="nav-item nav-link">Admin</a>
-          <a href="/contactus" class="nav-item nav-link">Contact</a>
-          
+        <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
+          <a href="/" class="text-white text-3xl font-semibold text-clip" style="font-family: verdana;">TestMate</a>
         </div>
-
-
-
-
+        <div class="hidden sm:block sm:ml-6">
+          <div class="flex space-x-4">
+            <a href="/" class="text-white px-3 py-2 rounded-md text-lg font-medium hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400">Home</a>
+            <a href="/teacher/teacherclick" class="text-white px-3 py-2 rounded-md text-lg font-medium hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400">Teacher</a>
+            <a href="/student/studentclick" class="text-white px-3 py-2 rounded-md text-lg font-medium hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400">Student</a>
+            <a href="/adminclick" class="text-white px-3 py-2 rounded-md text-lg font-medium hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400">Admin</a>
+            <a href="/contactus" class="text-white px-3 py-2 rounded-md text-lg font-medium hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400">Contact</a>
+          </div>
+        </div>
       </div>
-    </nav>
-  </div>
-
+    </div>
+  </nav>
 
 </body>
 

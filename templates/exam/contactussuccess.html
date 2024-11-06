@@ -5,33 +5,56 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-
-  <style media="screen">
-    .jumbotron {
-      margin-bottom: 0px;
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    /* Custom Animation for the Icon */
+    @keyframes pop {
+      0% { transform: scale(0.6); opacity: 0; }
+      60% { transform: scale(1.2); opacity: 1; }
+      100% { transform: scale(1); }
     }
 
-    .jumbotron h1 {
-      text-align: center;
+    /* Smooth scroll effect */
+    html {
+      scroll-behavior: smooth;
     }
   </style>
-
 </head>
 
-<body>
+<body class="bg-gray-50">
 
   {% include "exam/navbar.html" %}
-  <br><br>
-  <div class="jumbotron">
-    <h1 class="display-4">Your message sent successfully !</h1>
-    <p class="lead">We will respond to your feedback soon</p>
-    <hr class="my-4">
-    <p>Check other features of website !</p>
-    <p class="lead">
-      <a class="btn btn-primary btn-lg" href="/" role="button">HOME</a>
-    </p>
-  </div>
+
+
+  <!-- Full-Screen Hero Section -->
+  <section class="relative bg-gradient-to-r from-teal-500 to-teal-700 text-white min-h-screen flex justify-center items-center">
+    <div class="absolute inset-0 bg-black opacity-50"></div>
+    
+    <div class="relative z-10 text-center px-4 py-8">
+      <!-- Title Section with Icon -->
+      <h1 class="text-5xl font-bold leading-tight mb-6">
+        <i class="fas fa-check-circle text-6xl animate-pop mb-4 text-teal-300"></i>
+        Your Message Was Sent Successfully!
+      </h1>
+      <!-- Message Section -->
+      <p class="text-xl md:text-2xl text-white mb-8">
+        We’ll get back to you as soon as possible. Your feedback is important to us!
+      </p>
+      
+      <!-- Divider -->
+      <div class="w-24 h-1 bg-teal-300 mx-auto mb-8"></div>
+      
+      <!-- Call-to-Action Section -->
+      <p class="text-lg md:text-xl mb-4 text-white">Explore other amazing features of our website!</p>
+      
+      <!-- Button with Hover Effects -->
+      <a href="/" class="inline-block bg-teal-300 text-teal-800 font-semibold py-3 px-8 rounded-full transition duration-300 ease-in-out transform hover:bg-teal-400 hover:text-white hover:scale-105 shadow-lg">
+        <i class="fas fa-home mr-2"></i> Go to Home
+      </a>
+    </div>
+  </section>
 
   {% include "exam/footer.html" %}
 </body>

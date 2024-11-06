@@ -1,21 +1,40 @@
-{%load static%}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <title></title>
+    <title>Logged Out</title>
+    <script src="https://cdn.tailwindcss.com"></script>
   </head>
-  <body>
+  <body class="bg-gradient-to-r from-[#d7d2cc] to-[#304352] font-sans">
+
     {% include "exam/navbar.html" %}
-    <br><br><br><br><br>
-<!-- <img src="{% static "image/logout_img.png" %}"  style="width:800px; height:100px; padding-left:400px;"> -->
+    
+    <div class="flex justify-center items-center min-h-screen">
+      <div class="text-center p-10 bg-[#212529] rounded-lg shadow-lg max-w-xl mx-auto text-white">
+        <!-- Success Icon -->
+        <div class="flex justify-center mb-6">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-20 h-20 text-green-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1.707-11.707a1 1 0 00-1.414 0L9 8.586 8.707 8.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4a1 1 0 000-1.414z" clip-rule="evenodd"/>
+          </svg>
+        </div>
+        
+        <h2 class="text-3xl font-semibold mb-4">Logged Out Successfully</h2>
+        <p class="text-xl mb-6">Thank you for using our system!</p>
+        
+        <!-- Success Message -->
+        <p class="text-lg text-gray-300 mb-6">We hope to see you again soon. If you need further assistance, feel free to log in again.</p>
+        
+        <!-- Call to Action -->
+        <div class="mt-8">
+          <a href="/" class="inline-block bg-[#4caf50] hover:bg-[#347736] text-white font-semibold text-lg px-6 py-3 rounded-lg transition-colors duration-300">
+            Go Back to Home
+          </a>
+        </div>
+      </div>
+    </div>
 
-<h2 class="text-center">Logged Out Successfully. <br> Thank you for using our system!</h2>
-
-<br><br><br><br><br>
-<br><br><br><br><br>
-<br><br>
-{% include "exam/footer.html" %}
-
+    {% include "exam/footer.html" %}
+    
   </body>
 </html>

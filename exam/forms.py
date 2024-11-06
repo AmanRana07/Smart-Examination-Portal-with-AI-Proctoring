@@ -5,10 +5,32 @@ from .models import Course
 
 
 class ContactusForm(forms.Form):
-    Name = forms.CharField(max_length=30)
-    Email = forms.EmailField()
+    Name = forms.CharField(
+        max_length=30,
+        widget=forms.TextInput(
+            attrs={
+                "class": "w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+            }
+        ),
+    )
+
+    Email = forms.EmailField(
+        widget=forms.EmailInput(
+            attrs={
+                "class": "w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+            }
+        )
+    )
+
     Message = forms.CharField(
-        max_length=500, widget=forms.Textarea(attrs={"rows": 3, "cols": 30})
+        max_length=500,
+        widget=forms.Textarea(
+            attrs={
+                "rows": 5,
+                "cols": 30,
+                "class": "w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500",
+            }
+        ),
     )
 
 
