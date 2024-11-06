@@ -102,14 +102,14 @@
 
     <!-- Average Time Spent on Each Exam -->
     <div class="col-md-6 chart-container">
-      <canvas id="timeSpentChart"></canvas>
+      <canvas id="performanceComparisonChart"></canvas>
     </div>
   </div>
 
   <div class="row">
     <!-- Comparison of Exam Performance Against Average Scores -->
     <div class="col-md-12 chart-container">
-      <canvas id="performanceComparisonChart"></canvas>
+     
     </div>
   </div>
 </div>
@@ -188,29 +188,7 @@
   });
 
   // Average Time Spent on Each Exam
-  const timeSpentCtx = document.getElementById('timeSpentChart').getContext('2d');
-  new Chart(timeSpentCtx, {
-    type: 'bar',
-    data: {
-      labels: {{ session_courses|safe }},
-      datasets: [{
-        label: 'Time Spent (minutes)',
-        data: {{ session_durations|safe }},
-        backgroundColor: 'rgba(54, 162, 235, 0.6)',
-        borderColor: 'rgba(54, 162, 235, 1)',
-        borderWidth: 1
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: {
-          position: 'top',
-        },
-      },
-    }
-  });
-
+ 
   // Comparison of Exam Performance Against Average Scores
   const performanceComparisonCtx = document.getElementById('performanceComparisonChart').getContext('2d');
   new Chart(performanceComparisonCtx, {

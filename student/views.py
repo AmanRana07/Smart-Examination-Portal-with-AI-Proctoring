@@ -337,8 +337,6 @@ def start_exam_view(request, pk):
         )
 
         # Start the proctoring in a separate thread
-        proctoring_thread = threading.Thread(target=run_proctoring, args=(session,))
-        proctoring_thread.start()
 
         # Render the start exam page with context data
         response = render(
@@ -486,75 +484,6 @@ def monitor_exam_cancellation_view(request, session_id):
         time.sleep(1)
 
     return redirect("exam-completion-page")
-
-
-def run_proctoring(session):
-    cap = cv2.VideoCapture(0)
-    if not cap.isOpened():
-        raise Exception("Unable to access the webcam.")
-
-    # Retrieve all stored images for the student
-    student_images = StudentImage.objects.filter(user=session.student.user)
-    training_images = []
-    labels = []
-
-    for idx, student_image in enumerate(student_images):
-        stored_image = cv2.imread(student_image.image.path)
-        stored_image_gray = cv2.cvtColor(stored_image, cv2.COLOR_BGR2GRAY)
-        training_images.append(stored_image_gray)
-        labels.append(idx)  # Assigning a label to each image
-
-    # Initialize face detector and face recognizer
-    face_cascade = cv2.CascadeClassifier(
-        cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
-    )
-    recognizer = cv2.face.LBPHFaceRecognizer_create()
-
-    # Train the recognizer with all stored images
-    recognizer.train(training_images, np.array(labels))
-
-    alerts_count = 0
-
-    while cap.isOpened():
-        ret, frame = cap.read()
-        if not ret:
-            break
-
-        gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        faces = face_cascade.detectMultiScale(
-            gray_frame, scaleFactor=1.1, minNeighbors=5
-        )
-
-        for x, y, w, h in faces:
-            roi_gray = gray_frame[y : y + h, x : x + w]
-            label, confidence = recognizer.predict(roi_gray)
-
-            if confidence < 60:
-                print("Face matched.")
-            else:
-                print("Face did not match. Cancelling exam...")
-                alerts_count += 1
-                log_suspicious_activity(
-                    session,
-                    "Face Mismatch Detected",
-                    "The face in the current frame does not match the stored face.",
-                )
-                if alerts_count >= 3:
-                    session.is_active = False
-                    session.cancellation_flag = True
-                    session.save()
-                    cap.release()
-                    cv2.destroyAllWindows()
-                    cancel_exam(session)
-                    return
-
-        if cv2.waitKey(1) & 0xFF == ord("q"):
-            break
-
-        time.sleep(15)  # Wait for 15 seconds before the next check
-
-    cap.release()
-    cv2.destroyAllWindows()
 
 
 def log_suspicious_activity(session, activity_type, description):

@@ -319,23 +319,27 @@ def admin_question_view(request):
 def admin_add_question_view(request):
     # Get only the courses created by the logged-in user
     user_courses = models.Course.objects.filter(creator=request.user)
-    
+
     # Initialize the form with the user's courses
     questionForm = forms.QuestionForm()
-    questionForm.fields['courseID'].queryset = user_courses
+    questionForm.fields["courseID"].queryset = user_courses
 
     if request.method == "POST":
         questionForm = forms.QuestionForm(request.POST)
-        questionForm.fields['courseID'].queryset = user_courses  # Ensure the form filters courses on POST as well
+        questionForm.fields["courseID"].queryset = (
+            user_courses  # Ensure the form filters courses on POST as well
+        )
         if questionForm.is_valid():
             question = questionForm.save(commit=False)
-            question.course = questionForm.cleaned_data['courseID']
+            question.course = questionForm.cleaned_data["courseID"]
             question.save()
             return HttpResponseRedirect("/admin-view-question")
         else:
             print("Form is invalid")
-    
-    return render(request, "exam/admin_add_question.html", {"questionForm": questionForm})
+
+    return render(
+        request, "exam/admin_add_question.html", {"questionForm": questionForm}
+    )
 
 
 @login_required(login_url="adminlogin")
@@ -520,7 +524,9 @@ def chatbot_view(request):
 
             # Check if it's the first interaction or if the message is a start/init signal
             if not user_message or user_message in ["start", "init"]:
-                response_message = "Hi! Welcome to TestMate 🥰! What can I help you with?"
+                response_message = (
+                    "Hi! Welcome to TestMate 🥰! What can I help you with?"
+                )
             else:
                 # Process the user's query and get the intent
                 intent = get_intent(user_message)
