@@ -1,114 +1,229 @@
 {% extends 'teacher/teacherbase.html' %}
-{% load widget_tweaks %}
+{% load static %}
 {% block content %}
 
-
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-    <link href="http://netdna.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
-    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
-    <style type="text/css">
-      a:link {
-        text-decoration: none;
-      }
-  
-      .order-card {
-        color: rgb(255, 255, 255);
-      }
-  
-      .bg-c-blue {
-        background: #04868f;
-      }
-  
-      .bg-c-green {
-        background:#4C51BF;
-      }
-  
-      .bg-c-yellow {
-        background: #F56565;
-      }
-  
-      .bg-c-gtx {
-        background:#57717d;
-      }
-  
-  
-      .card {
-        
-        -webkit-box-shadow: 0 1px 2.94px 0.06px rgba(4, 26, 55, 0.16);
-        box-shadow: 0 1px 2.94px 0.06px rgba(4, 26, 55, 0.16);
-        margin-bottom: 30px;
-        -webkit-transition: all 0.3s ease-in-out;
-        transition: all 0.3s ease-in-out;
-      }
-  
-      .card .card-block {
-        padding: 25px;
-      }
-  
-      .order-card i {
-        font-size: 26px;
-      }
-  
-      .f-left {
-        float: left;
-      }
-  
-      .f-right {
-        float: right;
-      }
-      header {
-      left: 0px;
-      right: 0px;
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .dashboard-header {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 24px;
+      font-weight: bold;
+      color: #4C51BF;
     }
-    </style>
-  </head>
-<br><br>
 
-  <div class="container">
-    <div class="row">
-      
-        <div class="col-md-4 col-xl-4">
-            <div class="card bg-c-gtx order-card">
-              <div class="card-block">
-                <h6 class="m-b-20">Registered Students </h6>
-                <h2 class="text-right"><i class="fas fa-user-graduate f-left"></i><span>{{total_student}}</span></h2>
-                
-              </div>
-            </div>
-          </div>
-  
-      <div class="col-md-4 col-xl-4">
-        <div class="card bg-c-yellow order-card">
-          <div class="card-block">
-            <h6 class="m-b-20">Total Courses</h6>
-           <h2 class="text-right"><i class="fas fa-book f-left"></i><span>{{total_course}}</span></h2>
-            
-          </div>
+    .order-card {
+      color: #fff;
+      border-radius: 15px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s;
+    }
+
+    .order-card:hover {
+      transform: scale(1.05);
+    }
+
+    .bg-c-blue { background: #04868f; }
+    .bg-c-green { background: #4C51BF; }
+    .bg-c-yellow { background: #F56565; }
+    .bg-c-gtx { background: #57717d; }
+
+    .chart-container {
+      margin-top: 20px;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .chart-title {
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #333;
+    }
+  </style>
+</head>
+
+<div class="container">
+  <div class="dashboard-header">Teacher Dashboard</div>
+
+  <div class="row text-center mt-4">
+    <div class="col-md-4">
+      <div class="card bg-c-gtx order-card">
+        <div class="card-block p-3">
+          <h6>Registered Students</h6>
+          <h2><i class="fas fa-user-graduate"></i> <span>{{ total_student }}</span></h2>
         </div>
       </div>
-  
-      <div class="col-md-4 col-xl-4">
-        <div class="card bg-c-blue order-card">
-          <div class="card-block">
-            <h6 class="m-b-20">Total Questions</h6>
-            <h2 class="text-right"><i class="fas fa-question-circle f-left"></i><span>{{total_question}}</span></h2>
-            
-          </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card bg-c-yellow order-card">
+        <div class="card-block p-3">
+          <h6>Total Courses</h6>
+          <h2><i class="fas fa-book"></i> <span>{{ total_course }}</span></h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card bg-c-blue order-card">
+        <div class="card-block p-3">
+          <h6>Total Questions</h6>
+          <h2><i class="fas fa-question-circle"></i> <span>{{ total_question }}</span></h2>
         </div>
       </div>
     </div>
   </div>
 
+  <div class="row mt-5">
+    <!-- Average Marks by Course -->
+    <div class="col-md-6">
+      <div class="chart-container">
+        <div class="chart-title">Average Marks by Course</div>
+        <canvas id="performanceChart"></canvas>
+      </div>
+    </div>
 
-<br><br><br><br><br><br><br><br><br><br>
+    <!-- Exam Completion Rate per Course -->
+    <div class="col-md-6">
+      <div class="chart-container">
+        <div class="chart-title">Exam Completion Rate</div>
+        <canvas id="completionRateChart"></canvas>
+      </div>
+    </div>
+  </div>
 
-<script src="http://netdna.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+  <div class="row mt-5">
+    <!-- Violations Count per Course -->
+    <div class="col-md-6">
+      <div class="chart-container">
+        <div class="chart-title">Violations per Course</div>
+        <canvas id="violationsChart"></canvas>
+      </div>
+    </div>
 
+    <!-- Pass/Fail Rate per Course -->
+    <div class="col-md-6">
+      <div class="chart-container">
+        <div class="chart-title">Pass/Fail Rate per Course</div>
+        <canvas id="passFailRateChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-5">
+    <!-- Total Questions per Course -->
+    <div class="col-md-6">
+      <div class="chart-container">
+        <div class="chart-title">Total Questions per Course</div>
+        <canvas id="questionCountsChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Average Marks by Course
+  new Chart(document.getElementById('performanceChart'), {
+    type: 'bar',
+    data: {
+      labels: {{ course_names|safe }},
+      datasets: [{
+        label: 'Average Marks',
+        data: {{ average_marks|safe }},
+        backgroundColor: 'rgba(54, 162, 235, 0.7)',
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { tooltip: { enabled: true } },
+      scales: { y: { beginAtZero: true } }
+    }
+  });
+
+  // Exam Completion Rate per Course
+  new Chart(document.getElementById('completionRateChart'), {
+    type: 'bar',
+    data: {
+      labels: {{ course_names|safe }},
+      datasets: [{
+        label: 'Completion Rate',
+        data: {{ completion_rates|safe }},
+        backgroundColor: 'rgba(255, 159, 64, 0.7)',
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { tooltip: { enabled: true } },
+      scales: { y: { beginAtZero: true } }
+    }
+  });
+
+  // Violations Count per Course
+  new Chart(document.getElementById('violationsChart'), {
+    type: 'bar',
+    data: {
+      labels: {{ course_names|safe }},
+      datasets: [{
+        label: 'Violations',
+        data: {{ violations_counts|safe }},
+        backgroundColor: 'rgba(255, 99, 132, 0.7)',
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { tooltip: { enabled: true } },
+      scales: { y: { beginAtZero: true } }
+    }
+  });
+
+  // Pass/Fail Rate per Course
+  new Chart(document.getElementById('passFailRateChart'), {
+    type: 'bar',
+    data: {
+      labels: {{ course_names|safe }},
+      datasets: [
+        {
+          label: 'Pass',
+          data: {{ pass_counts|safe }},
+          backgroundColor: 'rgba(54, 162, 235, 0.6)',
+        },
+        {
+          label: 'Fail',
+          data: {{ fail_counts|safe }},
+          backgroundColor: 'rgba(255, 159, 64, 0.6)',
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: { tooltip: { enabled: true } },
+      scales: { y: { beginAtZero: true } }
+    }
+  });
+
+  // Total Questions per Course
+  new Chart(document.getElementById('questionCountsChart'), {
+    type: 'bar',
+    data: {
+      labels: {{ course_names|safe }},
+      datasets: [{
+        label: 'Total Questions',
+        data: {{ question_counts|safe }},
+        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { tooltip: { enabled: true } },
+      scales: { y: { beginAtZero: true } }
+    }
+  });
+</script>
 
 {% endblock content %}

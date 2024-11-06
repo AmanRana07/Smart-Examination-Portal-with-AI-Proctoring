@@ -15,6 +15,7 @@ import csv
 import io
 from django.http import HttpResponse
 from collections import defaultdict
+from django.db.models import Avg, F
 
 
 # for showing signup/login button for teacher
@@ -48,15 +49,75 @@ def is_teacher(user):
     return user.groups.filter(name="TEACHER").exists()
 
 
+from django.db.models import Avg, Count, Q
+
+
 @login_required(login_url="teacherlogin")
 @user_passes_test(is_teacher)
 def teacher_dashboard_view(request):
-    dict = {
-        "total_course": QMODEL.Course.objects.all().count(),
-        "total_question": QMODEL.Question.objects.all().count(),
-        "total_student": SMODEL.Student.objects.all().count(),
+    teacher = request.user
+    teacher_courses = QMODEL.Course.objects.filter(creator=teacher)
+    passing_mark = 40  # Set a passing mark threshold
+
+    # Data for each graph
+    course_names = [course.course_name for course in teacher_courses]
+
+    # Average Marks per Course
+    average_marks = [
+        QMODEL.Result.objects.filter(exam=course).aggregate(avg_marks=Avg("marks"))[
+            "avg_marks"
+        ]
+        or 0
+        for course in teacher_courses
+    ]
+
+    # Exam Completion Rate per Course
+    completion_rates = [
+        QMODEL.Result.objects.filter(exam=course).count() for course in teacher_courses
+    ]
+
+    # Violation Counts per Course
+    violations_counts = [
+        QMODEL.Violation.objects.filter(session__course=course).count()
+        for course in teacher_courses
+    ]
+
+    # Pass/Fail Rate per Course
+    pass_counts = [
+        QMODEL.Result.objects.filter(exam=course, marks__gte=passing_mark).count()
+        for course in teacher_courses
+    ]
+    fail_counts = [
+        QMODEL.Result.objects.filter(exam=course, marks__lt=passing_mark).count()
+        for course in teacher_courses
+    ]
+
+    # Total Questions per Course
+    question_counts = [
+        QMODEL.Question.objects.filter(course=course).count()
+        for course in teacher_courses
+    ]
+
+    context = {
+        "total_course": teacher_courses.count(),
+        "total_question": QMODEL.Question.objects.filter(
+            course__in=teacher_courses
+        ).count(),
+        "total_student": SMODEL.Student.objects.filter(
+            examsession__course__in=teacher_courses
+        )
+        .distinct()
+        .count(),
+        "course_names": course_names,
+        "average_marks": average_marks,
+        "completion_rates": completion_rates,
+        "violations_counts": violations_counts,
+        "pass_counts": pass_counts,
+        "fail_counts": fail_counts,
+        "question_counts": question_counts,
     }
-    return render(request, "teacher/teacher_dashboard.html", context=dict)
+
+    return render(request, "teacher/teacher_dashboard.html", context)
 
 
 @login_required(login_url="teacherlogin")

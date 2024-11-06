@@ -1,104 +1,248 @@
 {% extends 'student/studentbase.html' %}
-{% load widget_tweaks %}
+{% load static %}
 {% block content %}
 
-
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-    <link href="http://netdna.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
-    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
-    <style type="text/css">
-      a:link {
-        text-decoration: none;
-      }
-  
-      .order-card {
-        color: rgb(255, 255, 255);
-      }
-  
-      .bg-c-blue {
-        background: #04868f;
-      }
-  
-      .bg-c-green {
-        background:#4C51BF;
-      }
-  
-      .bg-c-yellow {
-        background: #F56565;
-      }
-  
-      .bg-c-pink {
-        background: #663a30;
-      }
-  
-  
-      .card {
-        
-        -webkit-box-shadow: 0 1px 2.94px 0.06px rgba(4, 26, 55, 0.16);
-        box-shadow: 0 1px 2.94px 0.06px rgba(4, 26, 55, 0.16);
-        margin-bottom: 30px;
-        -webkit-transition: all 0.3s ease-in-out;
-        transition: all 0.3s ease-in-out;
-      }
-  
-      .card .card-block {
-        padding: 25px;
-      }
-  
-      .order-card i {
-        font-size: 26px;
-      }
-  
-      .f-left {
-        float: left;
-      }
-  
-      .f-right {
-        float: right;
-      }
-      header {
-      left: 0px;
-      right: 0px;
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .chart-container {
+      width: 100%;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: #f9f9f9;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
-    </style>
-  </head>
-<br><br>
+    
+    .card {
+      background: #007bff;
+      color: #fff;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
 
-  <div class="container">
-    <div class="row">
-      
-  
-      <div class="col-md-4 col-xl-6">
-        <div class="card bg-c-blue order-card">
-          <div class="card-block">
-            <h6 class="m-b-20">Available Exams</h6>
-           <h2 class="text-right"><i class="fas fa-book f-left"></i><span>{{total_course}}</span></h2>
-          </div>
+    .card .card-block {
+      padding: 15px;
+    }
+
+    .card h6 {
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .card h2 {
+      font-size: 2.5rem;
+    }
+
+    .text-right {
+      font-size: 1.5rem;
+    }
+
+    .icon {
+      font-size: 4rem;
+      color: rgba(255, 255, 255, 0.7);
+      position: absolute;
+      right: 20px;
+      bottom: 20px;
+    }
+
+    .fas {
+      margin-right: 10px;
+    }
+  </style>
+</head>
+
+<div class="container">
+  <h2 class="text-center mt-5 mb-4">Student Dashboard</h2>
+
+  <div class="row text-center">
+    <!-- Available Exams -->
+    <div class="col-md-6">
+      <div class="card bg-primary order-card">
+        <div class="card-block">
+          <h1>Available Exams</h1>
+          <h2 class="text-right"><i class="fas fa-book"></i><span>{{ total_course }}</span></h2>
+         
         </div>
       </div>
-  
-      <div class="col-md-4 col-xl-6">
-        <div class="card bg-c-yellow order-card">
-          <div class="card-block">
-            <h6 class="m-b-20">Total Questions</h6>
-            <h2 class="text-right"><i class="fas fa-question-circle f-left"></i><span>{{total_question}}</span></h2>
-            
-          </div>
+    </div>
+
+    <!-- Total Questions -->
+    <div class="col-md-6">
+      <div class="card bg-warning order-card">
+        <div class="card-block">
+          <h1>Total Questions</h1>
+          <h2 class="text-right"><i class="fas fa-question-circle"></i><span>{{ total_question }}</span></h2>
+      
         </div>
       </div>
     </div>
   </div>
 
+  <div class="row">
+    <!-- Exam Performance Over Time -->
+    <div class="col-md-6 chart-container">
+      <canvas id="examPerformanceChart"></canvas>
+    </div>
 
-<br><br><br><br><br><br><br><br><br><br>
+    <!-- Score Distribution by Course -->
+    <div class="col-md-6 chart-container">
+      <canvas id="scoreDistributionChart"></canvas>
+    </div>
+  </div>
 
-<script src="http://netdna.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+  <div class="row">
+    <!-- Violation Trends Across Exams -->
+    <div class="col-md-6 chart-container">
+      <canvas id="violationTrendsChart"></canvas>
+    </div>
 
+    <!-- Average Time Spent on Each Exam -->
+    <div class="col-md-6 chart-container">
+      <canvas id="timeSpentChart"></canvas>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Comparison of Exam Performance Against Average Scores -->
+    <div class="col-md-12 chart-container">
+      <canvas id="performanceComparisonChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Exam Performance Over Time
+  const examPerformanceCtx = document.getElementById('examPerformanceChart').getContext('2d');
+  new Chart(examPerformanceCtx, {
+    type: 'line',
+    data: {
+      labels: {{ exam_dates|safe }},
+      datasets: [{
+        label: 'Marks Over Time',
+        data: {{ exam_marks|safe }},
+        borderColor: 'rgba(75, 192, 192, 1)',
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'top',
+        },
+      },
+    }
+  });
+
+  // Score Distribution by Course
+  const scoreDistributionCtx = document.getElementById('scoreDistributionChart').getContext('2d');
+  new Chart(scoreDistributionCtx, {
+    type: 'bar',
+    data: {
+      labels: {{ course_names|safe }},
+      datasets: [{
+        label: 'Average Score',
+        data: {{ course_scores|safe }},
+        backgroundColor: 'rgba(153, 102, 255, 0.6)',
+        borderColor: 'rgba(153, 102, 255, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'top',
+        },
+      },
+    }
+  });
+
+  // Violation Trends Across Exams
+  const violationTrendsCtx = document.getElementById('violationTrendsChart').getContext('2d');
+  new Chart(violationTrendsCtx, {
+    type: 'bar',
+    data: {
+      labels: {{ violation_courses|safe }},
+      datasets: [{
+        label: 'Violation Count',
+        data: {{ violation_counts|safe }},
+        backgroundColor: 'rgba(255, 99, 132, 0.6)',
+        borderColor: 'rgba(255, 99, 132, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'top',
+        },
+      },
+    }
+  });
+
+  // Average Time Spent on Each Exam
+  const timeSpentCtx = document.getElementById('timeSpentChart').getContext('2d');
+  new Chart(timeSpentCtx, {
+    type: 'bar',
+    data: {
+      labels: {{ session_courses|safe }},
+      datasets: [{
+        label: 'Time Spent (minutes)',
+        data: {{ session_durations|safe }},
+        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+        borderColor: 'rgba(54, 162, 235, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'top',
+        },
+      },
+    }
+  });
+
+  // Comparison of Exam Performance Against Average Scores
+  const performanceComparisonCtx = document.getElementById('performanceComparisonChart').getContext('2d');
+  new Chart(performanceComparisonCtx, {
+    type: 'bar',
+    data: {
+      labels: {{ avg_course_names|safe }},
+      datasets: [
+        {
+          label: 'Student Score',
+          data: {{ student_scores|safe }},
+          backgroundColor: 'rgba(75, 192, 192, 0.6)',
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 1
+        },
+        {
+          label: 'Average Score',
+          data: {{ avg_marks|safe }},
+          backgroundColor: 'rgba(255, 159, 64, 0.6)',
+          borderColor: 'rgba(255, 159, 64, 1)',
+          borderWidth: 1
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'top',
+        },
+      },
+    }
+  });
+</script>
 
 {% endblock content %}

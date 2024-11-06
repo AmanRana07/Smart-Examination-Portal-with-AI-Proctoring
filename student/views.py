@@ -28,6 +28,7 @@ import time
 import logging
 from django.views.decorators.csrf import csrf_exempt
 import json
+from django.db.models import Avg, Sum
 
 
 # for showing signup/login button for student
@@ -72,11 +73,72 @@ def is_student(user):
 @login_required(login_url="studentlogin")
 @user_passes_test(is_student)
 def student_dashboard_view(request):
-    dict = {
+    student = request.user.student
+
+    # Exam Performance Over Time
+    results = Result.objects.filter(student=student).order_by("date")
+    exam_dates = [result.date.strftime("%Y-%m-%d") for result in results]
+    exam_marks = [result.marks for result in results]
+
+    # Score Distribution by Course
+    courses = Course.objects.all()
+    course_names = [course.course_name for course in courses]
+    course_scores = [
+        results.filter(exam=course).aggregate(Avg("marks"))["marks__avg"] or 0
+        for course in courses
+    ]
+
+    # Violation Trends Across Exams
+    violations = (
+        ExamSession.objects.filter(student=student)
+        .values("course__course_name")
+        .annotate(violation_count=Sum("suspicious_activity_count"))
+    )
+    violation_courses = [violation["course__course_name"] for violation in violations]
+    violation_counts = [violation["violation_count"] for violation in violations]
+
+    # Average Time Spent on Each Exam
+    exam_sessions = ExamSession.objects.filter(student=student)
+    session_courses = [session.course.course_name for session in exam_sessions]
+    session_durations = [
+        (
+            (session.end_time - session.start_time).total_seconds() / 60
+            if session.end_time
+            else 0
+        )
+        for session in exam_sessions
+    ]
+
+    # Comparison of Exam Performance Against Average Scores
+    avg_scores = (
+        Result.objects.filter(exam__in=courses)
+        .values("exam__course_name")
+        .annotate(avg_marks=Avg("marks"))
+    )
+    avg_course_names = [item["exam__course_name"] for item in avg_scores]
+    avg_marks = [item["avg_marks"] for item in avg_scores]
+    student_scores = [
+        results.filter(exam=course).aggregate(Avg("marks"))["marks__avg"] or 0
+        for course in courses
+    ]
+
+    context = {
+        "exam_dates": exam_dates,
+        "exam_marks": exam_marks,
+        "course_names": course_names,
+        "course_scores": course_scores,
+        "violation_courses": violation_courses,
+        "violation_counts": violation_counts,
+        "session_courses": session_courses,
+        "session_durations": session_durations,
+        "avg_course_names": avg_course_names,
+        "avg_marks": avg_marks,
+        "student_scores": student_scores,
         "total_course": QMODEL.Course.objects.all().count(),
         "total_question": QMODEL.Question.objects.all().count(),
     }
-    return render(request, "student/student_dashboard.html", context=dict)
+
+    return render(request, "student/student_dashboard.html", context=context)
 
 
 @login_required(login_url="studentlogin")
