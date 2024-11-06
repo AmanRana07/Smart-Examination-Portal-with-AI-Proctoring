@@ -166,28 +166,64 @@
         }
 
         #chatbot-toggle {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 50px; /* Smaller size */
-            height: 50px; /* Smaller size */
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 24px; /* Smaller icon size */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            z-index: 1001;
-            transition: background-color 0.3s ease;
-        }
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 60px; /* Increased size */
+    height: 60px; /* Increased size */
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 28px; /* Larger icon size */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1001;
+    transition: background-color 0.3s ease;
+    animation: pulse 2s infinite;
+}
 
-        #chatbot-toggle:hover {
-            background-color: #007bff;
-        }
+#chatbot-toggle:hover {
+    animation: bounce 0.5s ease forwards;
+}
+
+#chatbot-toggle-icon {
+    font-size: 28px; /* Larger icon size */
+    color: white;
+}
+
+/* Bubble Pulse Animation */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Bounce Animation on Hover */
+@keyframes bounce {
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
 
         #chatbot-toggle-icon {
             display: inline-block;
