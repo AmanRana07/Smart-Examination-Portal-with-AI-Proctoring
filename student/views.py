@@ -161,18 +161,23 @@ def student_exam_view(request):
         student=request.user.student
     ).values_list("course", flat=True)
 
-    # Retrieve the actual course objects
+    # Retrieve the actual course objects that the student is enrolled in
     courses = Course.objects.filter(id__in=enrolled_courses)
 
     # Get all exam sessions for the logged-in student
     exam_sessions = ExamSession.objects.filter(student=request.user.student)
 
     # Create a set of canceled course IDs
-    canceled_courses = set(
-        exam_sessions.filter(cancellation_flag=True).values_list("course_id", flat=True)
+    canceled_course_ids = exam_sessions.filter(cancellation_flag=True).values_list(
+        "course_id", flat=True
     )
+    print(canceled_course_ids)
+    canceled_courses = set(canceled_course_ids)
 
-    print(canceled_courses)
+    # Debug prints
+    print("Enrolled Courses:", enrolled_courses)
+    print("Canceled Course IDs:", canceled_courses)
+
     return render(
         request,
         "student/student_exam.html",
@@ -721,6 +726,14 @@ def save_violation(request):
             user=request.user,
             violation_message=violation_message,
         )
+        # Count total violations for this session
+        total_violations = Violation.objects.filter(session=session_id).count()
+
+        # Check if total violations exceed the limit (e.g., 3)
+        session = get_object_or_404(ExamSession, id=session_id)
+        if total_violations >= 3:
+            session.cancellation_flag = True
+            session.save()
 
         return JsonResponse({"status": "success"})
     return JsonResponse({"status": "failed"}, status=400)
