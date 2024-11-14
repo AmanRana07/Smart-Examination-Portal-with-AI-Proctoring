@@ -23,6 +23,7 @@
                 <th>Created By</th> <!-- New column for creator -->
                 <th>Total Questions</th>
                 <th>Total Marks</th>
+                <th>Course Code</th>
                 <th>Duration (in minutes)</th>
                 <th>Actions</th>
             </tr>
@@ -34,6 +35,7 @@
                 <td>{{ course.creator.username }}</td> <!-- Display creator's name -->
                 <td>{{ course.question_number }}</td>
                 <td>{{ course.total_marks }}</td>
+                <td>{{ course.course_code }}</td>
                 <td>{{ course.duration_minutes }}</td>
                 <td>
                     <a href="{% url 'edit-course' course.id %}" class="btn btn-warning" style="border-radius:0px;">Edit</a>

@@ -209,34 +209,57 @@
     }
   });
 
-  // Violation Frequency Pie Chart
-  new Chart(document.getElementById('violationPieChart').getContext('2d'), {
+  // Generate colors dynamically based on the number of violation messages
+var labels = {{ voilation_messages|safe }};
+var data = {{ violation_countss|safe }};
+
+var backgroundColors = [];
+var borderColors = [];
+
+// Function to generate a random pastel color in RGBA format
+function getRandomPastelColor() {
+    var r = Math.floor(Math.random() * 127 + 128); // Lighter range (128–255)
+    var g = Math.floor(Math.random() * 127 + 128);
+    var b = Math.floor(Math.random() * 127 + 128);
+    return `rgba(${r}, ${g}, ${b}, 0.5)`;
+}
+
+// Populate the color arrays to match the number of labels
+labels.forEach(() => {
+    var color = getRandomPastelColor();
+    backgroundColors.push(color);
+    borderColors.push(color.replace('0.5', '1')); // Full opacity for borders
+});
+
+// Create the chart
+var ctx = document.getElementById('violationPieChart').getContext('2d');
+var violationPieChart = new Chart(ctx, {
     type: 'pie',
     data: {
-      labels: {{ voilation_messages|safe }},
-      datasets: [{
-        data: {{ violation_counts|safe }},
-        backgroundColor: [
-          'rgba(255, 99, 132, 0.2)',
-          'rgba(54, 162, 235, 0.2)',
-          'rgba(255, 206, 86, 0.2)',
-          'rgba(75, 192, 192, 0.2)',
-          'rgba(153, 102, 255, 0.2)',
-          'rgba(255, 159, 64, 0.2)'
-        ],
-        borderColor: [
-          'rgba(255, 99, 132, 1)',
-          'rgba(54, 162, 235, 1)',
-          'rgba(255, 206, 86, 1)',
-          'rgba(75, 192, 192, 1)',
-          'rgba(153, 102, 255, 1)',
-          'rgba(255, 159, 64, 1)'
-        ],
-        borderWidth: 1
-      }]
+        labels: labels,
+        datasets: [{
+            label: 'Violation Frequency',
+            data: data,
+            backgroundColor: backgroundColors,
+            borderColor: borderColors,
+            borderWidth: 1
+        }]
     },
-    options: { responsive: true }
-  });
+    options: {
+        responsive: true,
+        plugins: {
+            tooltip: {
+                backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                titleColor: '#fff',
+                bodyColor: '#fff',
+                borderColor: '#333',
+                borderWidth: 1,
+                cornerRadius: 3
+            }
+        }
+    }
+});
+
 </script>
 <script>
   // Initialize DataTables

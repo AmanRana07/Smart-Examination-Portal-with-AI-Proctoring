@@ -47,4 +47,7 @@ urlpatterns = [
         name="exam-cancellation-page",
     ),
     path("save-violation/", views.save_violation, name="save-violation"),
+    path(
+        "add-course", views.student_add_course_view, name="student_add_course"
+    ),
 ]

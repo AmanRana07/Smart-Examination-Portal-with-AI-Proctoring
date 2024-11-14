@@ -10,6 +10,53 @@
         a:link {
             text-decoration: none;
         }
+        .popup {
+  visibility: hidden;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  border-radius: 8px;
+  padding: 8px 12px;
+  position: absolute;
+  bottom: 140%; /* Position above the text */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+  opacity: 0;
+  font-size: 0.85em;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.popup::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 8px;
+  border-style: solid;
+  border-color: #333 transparent transparent transparent;
+}
+
+.copy-course:hover .popup {
+  visibility: visible;
+  opacity: 1;
+  transform: translate(-50%, -10px); /* Small upward movement for the animation */
+}
+
+.copy-course {
+  cursor: pointer;
+  color: #3498db;
+  position: relative;
+  font-weight: bold;
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.copy-course:hover {
+  color: #1e6eb9;
+}
     </style>
 </head>
 
@@ -23,6 +70,7 @@
                 <!-- <th>Created By</th> New column for creator -->
                 <th>Total Questions</th>
                 <th>Total Marks</th>
+                <th>Course Code</th>
                 <th>Duration (in minutes)</th>
                 <th>Actions</th>
             </tr>
@@ -34,6 +82,7 @@
                 <!-- <td>{{ course.creator.username }}</td> Display creator's name -->
                 <td>{{ course.question_number }}</td>
                 <td>{{ course.total_marks }}</td>
+                <td class="copy-course" onclick="copyCourseCode('{{ course.course_code }}')">{{ course.course_code }}<span class="popup" id="popupMessage">Course code copied!</span></td>
                 <td>{{ course.duration_minutes }}</td>
                 <td>
                     <a href="{% url 'edit-exam-course' course.id %}" class="btn btn-warning" style="border-radius:0px;">Edit</a>
@@ -51,5 +100,19 @@
         </tbody>
     </table>
 </div>
+<script>
+    function copyCourseCode(courseCode) {
+      navigator.clipboard.writeText(courseCode).then(() => {
+        const popup = document.getElementById('popupMessage');
+        popup.style.visibility = 'visible';
+        popup.style.opacity = '1';
+  
+        setTimeout(() => {
+          popup.style.visibility = 'hidden';
+          popup.style.opacity = '0';
+        }, 2000); // Hide popup after 2 seconds
+      });
+    }
+  </script>
 
 {% endblock content %}

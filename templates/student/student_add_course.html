@@ -1,0 +1,129 @@
+{% extends 'student/studentbase.html' %}
+{% block content %}
+{% load static %}
+
+<head>
+  <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+  <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f0f4f8;
+    }
+    h2 {
+      text-align: center;
+      margin-top: 30px;
+      color: #2c3e50;
+      font-weight: bold;
+    }
+    .form-container {
+      max-width: 600px;
+      margin: 30px auto;
+      padding: 25px;
+      background-color: #ffffff;
+      box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.15);
+      border-radius: 10px;
+      border-top: 5px solid #3498db;
+    }
+    label {
+      font-weight: 600;
+      color: #34495e;
+    }
+    .form-control {
+      margin-bottom: 15px;
+      border-radius: 5px;
+      border: 1px solid #ced4da;
+      padding: 10px;
+    }
+    .btn-register {
+      background-color: #3498db;
+      color: #fff;
+      font-weight: bold;
+      border: none;
+      width: 100%;
+      padding: 12px;
+      border-radius: 5px;
+      font-size: 16px;
+      transition: background-color 0.3s ease;
+    }
+    .btn-register:hover {
+      background-color: #1d6ca1;
+    }
+    .alert {
+      margin-top: 15px;
+      text-align: center;
+      border-radius: 5px;
+    }
+    .table-container {
+      margin-top: 30px;
+      background-color: #ffffff;
+      padding: 15px;
+      box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
+      background-color: #3498db;
+      color: white;
+    }
+  </style>
+</head>
+
+<div class="container">
+  <h2>Register for a Course</h2>
+  <div class="form-container">
+    <form method="post">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="course_code">Enter Course Code:</label>
+        <input type="text" name="course_code" id="course_code" class="form-control" placeholder="e.g., CS101" required>
+      </div>
+      <button type="submit" class="btn btn-register"><i class="glyphicon glyphicon-plus"></i> Register</button>
+    </form>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+  </div>
+
+  <div class="table-container">
+    <h3>Registered Courses</h3>
+    <table class="table table-striped table-bordered">
+      <thead>
+        <tr>
+          <th>Course Name</th>
+          <th>Course Code</th>
+          <th>Teacher</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for enrollment in enrollments %}
+        <tr>
+          <td>{{ enrollment.course.course_name }}</td>
+          <td>{{ enrollment.course.course_code }}</td>
+          <td>{{ enrollment.course.creator.username }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="3" class="text-center">No courses registered yet.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock content %}

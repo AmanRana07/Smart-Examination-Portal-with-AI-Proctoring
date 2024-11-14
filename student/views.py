@@ -29,6 +29,7 @@ import logging
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.db.models import Avg, Sum
+from django.contrib import messages
 
 
 # for showing signup/login button for student
@@ -155,19 +156,21 @@ def student_dashboard_view(request):
 @login_required(login_url="studentlogin")
 @user_passes_test(is_student)
 def student_exam_view(request):
-    courses = Course.objects.all()
-    canceled_courses = {}
+    # Get all courses the student has enrolled in
+    enrolled_courses = StudentCourseEnrollment.objects.filter(
+        student=request.user.student
+    ).values_list("course", flat=True)
+
+    # Retrieve the actual course objects
+    courses = Course.objects.filter(id__in=enrolled_courses)
 
     # Get all exam sessions for the logged-in student
     exam_sessions = ExamSession.objects.filter(student=request.user.student)
 
-    # Create a list of canceled course IDs
-    canceled_course_ids = exam_sessions.filter(cancellation_flag=True).values_list(
-        "course_id", flat=True
+    # Create a set of canceled course IDs
+    canceled_courses = set(
+        exam_sessions.filter(cancellation_flag=True).values_list("course_id", flat=True)
     )
-
-    # Pass the canceled course IDs as a set for faster lookup
-    canceled_courses = set(canceled_course_ids)
 
     print(canceled_courses)
     return render(
@@ -177,6 +180,38 @@ def student_exam_view(request):
             "courses": courses,
             "canceled_courses": canceled_courses,
         },
+    )
+
+
+@login_required(login_url="studentlogin")
+@user_passes_test(is_student)
+def student_add_course_view(request):
+    if request.method == "POST":
+        course_code = request.POST.get("course_code")
+        try:
+            course = Course.objects.get(course_code=course_code)
+            # Check if the student is already enrolled in the course
+            if not StudentCourseEnrollment.objects.filter(
+                student=request.user.student, course=course
+            ).exists():
+                StudentCourseEnrollment.objects.create(
+                    student=request.user.student, course=course
+                )
+                messages.success(
+                    request,
+                    f"You have successfully registered for the course: {course.course_name}",
+                )
+            else:
+                messages.warning(request, "You are already registered for this course.")
+        except Course.DoesNotExist:
+            messages.error(request, "Invalid course code. Please try again.")
+
+        return redirect("student-exam")
+
+    # Pass enrolled courses to the template
+    enrollments = StudentCourseEnrollment.objects.filter(student=request.user.student)
+    return render(
+        request, "student/student_add_course.html", {"enrollments": enrollments}
     )
 
 

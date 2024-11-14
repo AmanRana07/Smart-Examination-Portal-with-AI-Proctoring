@@ -87,6 +87,11 @@ def admin_dashboard_view(request):
         .order_by("-count")
     )
     voilation_messages = [violation["violation_message"] for violation in violationss]
+    violation_countss = [
+        violation["count"] for violation in violationss
+    ]  # Ensure alignment
+    print("Violation Messages:", voilation_messages)
+    print("Violation Counts:", violation_countss)
 
     # Prepare data for the violations chart
     violation_labels = [
@@ -150,6 +155,7 @@ def admin_dashboard_view(request):
         "violation_values": violation_values,
         "voilation_messages": voilation_messages,
         "violations_by_student": violations_by_student,
+        "violation_countss":violation_countss,
     }
 
     return render(request, "exam/admin_dashboard.html", context=context)
