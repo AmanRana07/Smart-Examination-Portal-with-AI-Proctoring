@@ -72,4 +72,8 @@ urlpatterns = [
         name="course_sessions_view",
     ),
     path("send_message/<int:session_id>/", views.send_message, name="send_message"),
+    
+    path('forgot-password/', views.forgot_password, name='forgot_password'),
+    path('verify-otp/', views.verify_otp, name='verify_otp'),
+    path('reset-password/', views.reset_password, name='reset_password'),
 ]

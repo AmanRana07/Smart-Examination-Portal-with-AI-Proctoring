@@ -50,4 +50,8 @@ urlpatterns = [
     path(
         "add-course", views.student_add_course_view, name="student_add_course"
     ),
+    
+    path('forgot-password2/', views.forgot_password2, name='forgot_password2'),
+    path('verify-otp2/', views.verify_otp2, name='verify_otp2'),
+    path('reset-password2/', views.reset_password2, name='reset_password2'),
 ]

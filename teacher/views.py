@@ -16,6 +16,11 @@ import io
 from django.http import HttpResponse
 from collections import defaultdict
 from django.db.models import Avg, F
+import random
+from django.core.mail import send_mail
+from django.shortcuts import render, redirect
+from django.contrib import messages
+
 
 
 # for showing signup/login button for teacher
@@ -512,3 +517,90 @@ def send_message(request, session_id):
         )  # Redirect back to the chat view
 
     return redirect("chat_view", session_id=session_id)
+
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.core.mail import send_mail
+from django.contrib.auth.models import User
+import random
+
+
+
+
+def forgot_password(request):
+    if request.method == "POST":
+        email = request.POST.get('email')
+        
+        # Check if the email exists in the user database
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            messages.error(request, "Email address not found in our records.")
+            return render(request, 'teacher/forgot_password.html')
+        
+        # Generate a 6-digit OTP
+        otp = random.randint(100000, 999999)
+        
+        # Store OTP and email in the session for later verification
+        request.session['otp'] = otp
+        request.session['email'] = email
+        
+        # Send OTP via email
+        subject = "Reset Your Password - TestMate"
+        message = (
+            f"Dear {user.first_name},\n\n"  # Use the username from the user object
+            "We received a request to reset your password for your TestMate account. "
+            "Please use the One-Time Password (OTP) below to proceed with resetting your password:\n\n"
+            f"Your OTP: {otp}\n\n"
+            "If you did not request a password reset, please ignore this email or contact support immediately.\n\n"
+            "Thank you,\n"
+            "Team TestMate"
+        )
+        from_email = 'noinfo.testmate@gmail.com'  # Your sender email
+        recipient_list = [email]
+        
+        try:
+            send_mail(
+                subject,
+                message,
+                from_email,
+                recipient_list,
+            )
+            messages.success(request, "An OTP has been sent to your email. Please check your inbox.")
+            return redirect('verify_otp')  # Redirect to OTP verification page
+        except Exception as e:
+            # Handle potential email sending failure
+            messages.error(request, f"Failed to send OTP. Please try again later. Error: {str(e)}")
+    
+    return render(request, 'teacher/forgot_password.html')
+
+def verify_otp(request):
+    if request.method == "POST":
+        otp = "".join([
+            request.POST.get(f"otp_{i}") for i in range(1, 7)
+        ])  # Concatenate inputs
+        if otp.isdigit() and int(otp) == request.session.get('otp'):
+            messages.success(request, "OTP verified! You can now reset your password.")
+            return redirect('reset_password')
+        else:
+            messages.error(request, "Invalid OTP. Please try again.")
+    return render(request, 'teacher/verify_otp.html')
+
+
+from django.contrib.auth.models import User
+
+def reset_password(request):
+    if request.method == "POST":
+        new_password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')
+        if new_password == confirm_password:
+            email = request.session.get('email')
+            user = User.objects.get(email=email)
+            user.set_password(new_password)
+            user.save()
+            messages.success(request, "Password reset successful. You can now log in.")
+            return redirect('teacherlogin')  # Adjust as per your login page URL
+        else:
+            messages.error(request, "Passwords do not match.")
+    return render(request, 'teacher/reset_password.html')
+

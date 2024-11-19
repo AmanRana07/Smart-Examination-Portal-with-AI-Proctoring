@@ -1,0 +1,96 @@
+{% load widget_tweaks %}
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Verify OTP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        background: linear-gradient(to right, #d7d2cc, #304352); /* Gradient background */
+      }
+      .otp-container input {
+        width: 3rem;
+        height: 3rem;
+        margin: 0.5rem;
+        text-align: center;
+        font-size: 1.5rem;
+        border: 2px solid #d1d5db;
+        border-radius: 0.5rem;
+        outline: none;
+        transition: border-color 0.2s;
+      }
+      .otp-container input:focus {
+        border-color: #34d399;
+        box-shadow: 0 0 0 2px rgba(52, 211, 153, 0.5);
+      }
+    </style>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const otpInputs = document.querySelectorAll(".otp-container input");
+
+        otpInputs.forEach((input, index) => {
+          input.addEventListener("input", (event) => {
+            if (event.target.value.length === 1) {
+              // Move to the next input if it exists
+              const nextInput = otpInputs[index + 1];
+              if (nextInput) {
+                nextInput.focus();
+              }
+            }
+          });
+
+          input.addEventListener("keydown", (event) => {
+            if (event.key === "Backspace" && !input.value) {
+              // Move to the previous input if backspace is pressed and input is empty
+              const previousInput = otpInputs[index - 1];
+              if (previousInput) {
+                previousInput.focus();
+              }
+            }
+          });
+        });
+      });
+    </script>
+  </head>
+  <body class="font-sans bg-gradient-to-r from-[#d7d2cc] to-[#304352] min-h-screen">
+    {% include "exam/navbar.html" %}
+    <div class="flex justify-center items-start py-12">
+      <div class="w-full max-w-sm bg-white shadow-lg rounded-lg p-8">
+        <h2 class="text-2xl font-semibold text-gray-700 text-center mb-4">Verify OTP</h2>
+        <p class="text-sm text-gray-500 text-center mb-6">
+          Enter the 6-digit OTP sent to your registered email address.
+        </p>
+
+        <!-- Display messages -->
+        {% if messages %}
+          <ul class="mb-4">
+            {% for message in messages %}
+              <li class="{% if message.tags == 'error' %}bg-red-100 text-red-700 border-red-500{% else %}bg-green-100 text-green-700 border-green-500{% endif %} px-4 py-3 rounded-md mb-2 border">
+                {{ message }}
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+
+        <form method="post" class="space-y-4">
+          {% csrf_token %}
+          <div class="otp-container flex justify-center">
+            <input type="text" name="otp_1" maxlength="1" required>
+            <input type="text" name="otp_2" maxlength="1" required>
+            <input type="text" name="otp_3" maxlength="1" required>
+            <input type="text" name="otp_4" maxlength="1" required>
+            <input type="text" name="otp_5" maxlength="1" required>
+            <input type="text" name="otp_6" maxlength="1" required>
+          </div>
+          <div class="mt-6">
+            <button 
+              type="submit" 
+              class="w-full bg-green-500 text-white py-2 rounded-md font-semibold hover:bg-green-600 transition">
+              Verify OTP
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

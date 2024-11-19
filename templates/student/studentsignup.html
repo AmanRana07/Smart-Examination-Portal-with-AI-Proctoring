@@ -55,13 +55,18 @@
             {% render_field userForm.password|attr:'required:true' class="form-control w-full p-3 border-2 border-gray-500 bg-transparent text-white rounded-md focus:outline-none focus:ring-2 focus:ring-[#4caf50]" placeholder="Password" %}
           </div>
         </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div class="form-group">
+          <label for="inputEmail" class="text-white block mb-2">Email</label>
+          {% render_field userForm.email|attr:'required:true' class="w-full p-3 bg-gray-700 text-white border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Email" %}
+        </div>
 
         <!-- Profile Picture Field -->
-        <div class="form-group mb-6">
+        <div class="form-group">
           <label for="profile_pic" class="text-lg font-semibold mb-2">Profile Picture</label>
           {% render_field studentForm.profile_pic|attr:'required:true' class="form-control w-full p-3 border-2 border-gray-500 bg-transparent text-white rounded-md focus:outline-none focus:ring-2 focus:ring-[#4caf50]" placeholder="Choose Profile Picture" %}
         </div>
-
+      </div>
         <!-- Submit Button -->
         <div class="text-center">
           <button type="submit" class="w-full py-3 text-lg font-semibold text-white bg-[#4caf50] rounded-md hover:bg-[#347736] transition duration-300">Sign Up</button>

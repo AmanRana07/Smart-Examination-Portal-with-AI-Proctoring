@@ -48,12 +48,18 @@
             <label for="address">Address</label>
           {% render_field studentForm.address class="form-control" placeholder="Address" %}
           
-        <label for="username">Username</label>
-        {% render_field userForm.username class="form-control" placeholder="Username" %}
+          <label for="username">Username</label>
+          {% render_field userForm.username class="form-control" placeholder="Username" %}
+          
           <label for="password">Password</label>
-        {% render_field userForm.password class="form-control" placeholder="Password" %} <br><br>
-        <label for="profile_pic">Profile Picture</label>
+          {% render_field userForm.password class="form-control" placeholder="Password" %}
+          
+          <label for="email">Email Address</label>
+          {% render_field userForm.email class="form-control" placeholder="Email Address" %} <br><br>
+          
+          <label for="profile_pic">Profile Picture</label>
           {% render_field studentForm.profile_pic class="form-control" placeholder="Profile Picture" %}
+          
 <br><br>
     <input type="submit" value="Update" style="border-radius:0px;">
   </form>
