@@ -2,112 +2,92 @@
 {% load widget_tweaks %}
 {% block content %}
 
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-    <link href="http://netdna.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
-    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
-    <style type="text/css">
-      a:link {
-        text-decoration: none;
-      }
-  
-      .order-card {
-        color: rgb(255, 255, 255);
-      }
-  
-      .bg-c-blue {
-        background: #04868f;
-      }
-  
-      .bg-c-gtx {
-        background:#57717d;
-      }
-      .bg-c-yellow {
-        background: #F56565;
-      }
-  
-      .bg-c-pink {
-        background: #663a30;
-      }
-  
-  
-      .card {
-        
-        -webkit-box-shadow: 0 1px 2.94px 0.06px rgba(4, 26, 55, 0.16);
-        box-shadow: 0 1px 2.94px 0.06px rgba(4, 26, 55, 0.16);
-        margin-bottom: 30px;
-        -webkit-transition: all 0.3s ease-in-out;
-        transition: all 0.3s ease-in-out;
-      }
-  
-      .card .card-block {
-        padding: 25px;
-      }
-  
-      .order-card i {
-        font-size: 26px;
-      }
-  
-      .f-left {
-        float: left;
-      }
-  
-      .f-right {
-        float: right;
-      }
-      header {
-      left: 0px;
-      right: 0px;
-    }
-    </style>
-  </head>
-<br><br>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Global styling */
+        body {
+            background-color: #f8f9fa;
+        }
 
-  <div class="container">
-    <div class="row">
-        <div class="col-md-4 col-xl-6">
-            <a href="{% url 'teacher-add-multiple-questions' %}" style="text-decoration: none;color:white;">
+        a:link {
+            text-decoration: none;
+        }
+
+        /* Card styling */
+        .order-card {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .order-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-block {
+            padding: 30px;
+            color: white;
+            text-align: center;
+        }
+
+        .card .icon {
+            font-size: 50px;
+            margin-bottom: 15px;
+        }
+
+        .bg-c-blue {
+            background: linear-gradient(135deg, #3a8ea1, #5ab8c4);
+        }
+
+        .bg-c-green {
+            background: linear-gradient(135deg, #57c84d, #83e08a);
+        }
+
+        /* Responsive layout */
+        .container {
+            margin-top: 50px;
+            margin-bottom: 50px;
+        }
+    </style>
+</head>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <!-- Card 1: Add Multiple Questions -->
+        <div class="col-md-6 col-lg-4 mb-4">
+            <a href="{% url 'teacher-add-multiple-questions' %}" style="text-decoration: none;">
                 <div class="card bg-c-blue order-card">
                     <div class="card-block">
-                        <h6 class="m-b-20"> Multiple Question Add On</h6>
-                        <h2 class="text-right"><i class="fas fa-plus f-left"></i></h2>
+                        <div class="icon"><i class="fas fa-layer-group"></i></div>
+                        <h6 class="font-weight-bold">Multiple Question Add-On</h6>
+                        <p>Quickly add multiple questions to your course.</p>
                     </div>
                 </div>
             </a>
         </div>
-        
-  
-      <div class="col-md-4 col-xl-6">
-        <a href="teacher-view-exam" style="text-decoration: none;color:white;">
-            <div class="col-md-4 col-xl-6">
-                <a href="teacher-add-question" style="text-decoration: none;color:white;">
-                <div class="card bg-c-blue order-card">
-                  <div class="card-block">
-                    <h6 class="m-b-20"> Add Question </h6>
-                    <h2 class="text-right"><i class="fas fa-plus f-left"></i></h2>
-                  </div>
+
+        <!-- Card 2: Add Single Question -->
+        <div class="col-md-6 col-lg-4 mb-4">
+            <a href="teacher-add-question" style="text-decoration: none;">
+                <div class="card bg-c-green order-card">
+                    <div class="card-block">
+                        <div class="icon"><i class="fas fa-plus"></i></div>
+                        <h6 class="font-weight-bold">Add Question</h6>
+                        <p>Create individual questions for your courses.</p>
+                    </div>
                 </div>
-              </a>
-              </div>
-      </a>
-      </div>
-  
-     
-  
-     
+            </a>
+        </div>
     </div>
-  </div>
+</div>
 
-
-<br><br><br><br><br><br><br><br><br><br>
-
-<script src="http://netdna.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
-
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
 
 {% endblock content %}

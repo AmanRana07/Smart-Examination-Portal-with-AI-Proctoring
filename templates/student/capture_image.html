@@ -5,28 +5,33 @@
 <style>
   /* General Page Style */
   body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f7f9fc;
+    font-family: 'Poppins', sans-serif;
+    background-color: #f0f9ff;
     color: #333;
   }
 
   /* Card Layout */
   .card {
     background: #ffffff;
-    border-radius: 15px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     padding: 2.5rem;
-    margin: 3rem auto;
-    max-width: 450px;
+    margin: 2rem auto;
+    max-width: 800px;
     text-align: center;
-    border: none;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
   }
 
   .card h2 {
-    font-weight: 700;
-    color: #222;
-    margin-bottom: 1.5rem;
-    font-size: 1.75rem;
+    font-weight: 800;
+    color: #007acc;
+    margin-bottom: 1rem;
+    font-size: 2.5rem;
   }
 
   /* Video and Canvas Style */
@@ -35,20 +40,79 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
+    border-radius: 15px;
+    overflow: hidden;
+    animation: fadeIn 1.2s ease-in-out;
   }
 
-  video, canvas {
-    width: 280px;
-    height: 210px;
+  video,
+  canvas {
+    width: 400px;
+    height: 300px;
     border-radius: 12px;
-   /* border: 2px solid #007bff; */
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-    transition: box-shadow 0.3s ease;
+    border: 4px solid #007acc;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   }
 
-  video:hover, canvas:hover {
-    box-shadow: 0 10px 30px rgba(0, 123, 255, 0.3);
+  /* Preview Box */
+  .preview-box {
+    display: none;
+    margin-top: 1.5rem;
+    text-align: center;
+  }
+
+  .preview-box img {
+    width: 400px;
+    height: 300px;
+    border-radius: 12px;
+    border: 4px solid #388e3c;
+    box-shadow: 0 8px 20px rgba(56, 142, 60, 0.15);
+  }
+
+  /* Instructions */
+  .instructions {
+    background-color: #e8f5e9;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    text-align: left;
+    margin-top: 2rem;
+    font-size: 1.2rem;
+    line-height: 1.6;
+    color: #004d40;
+  }
+
+  .instructions h3 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #388e3c;
+    margin-bottom: 1rem;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  ul li {
+    padding: 8px 15px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    background: #f1f8e9;
+    font-weight: 500;
+    color: #2e7d32;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  ul li::before {
+    content: '✓';
+    color: #388e3c;
+    font-weight: bold;
   }
 
   /* Button Styles */
@@ -58,67 +122,67 @@
     border-radius: 30px;
     border: none;
     font-weight: 600;
-    margin-top: 0.7rem;
-    margin-bottom: 0.7rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
     cursor: pointer;
+    font-size: 1.2rem;
   }
 
   .btn-primary {
-    background: linear-gradient(135deg, #007bff, #0056b3);
+    background: #007acc;
     color: #fff;
+    box-shadow: 0 4px 10px rgba(0, 122, 204, 0.3);
   }
 
   .btn-primary:hover {
-    background: linear-gradient(135deg, #0056b3, #003f7f);
-    box-shadow: 0 6px 15px rgba(0, 91, 187, 0.2);
+    background: #005b9a;
+    box-shadow: 0 8px 15px rgba(0, 122, 204, 0.5);
   }
 
   .btn-success {
-    background: linear-gradient(135deg, #28a745, #218838);
+    background: #388e3c;
     color: #fff;
+    box-shadow: 0 4px 10px rgba(56, 142, 60, 0.3);
   }
 
   .btn-success:hover {
-    background: linear-gradient(135deg, #218838, #19692c);
-    box-shadow: 0 6px 15px rgba(40, 167, 69, 0.2);
+    background: #2e7d32;
+    box-shadow: 0 8px 15px rgba(56, 142, 60, 0.5);
   }
 
   .btn:disabled {
     background: #ccc;
     cursor: not-allowed;
   }
-
-  /* Success Message */
-  .capture-success {
-    font-size: 1rem;
-    color: #28a745;
-    margin-top: 1rem;
-    opacity: 0;
-    transform: translateY(10px);
-    transition: opacity 0.3s ease, transform 0.3s ease;
-  }
-
-  .capture-success.show {
-    opacity: 1;
-    transform: translateY(0);
-  }
 </style>
 
 <div class="container my-4">
-    <div class="card">
-        <h2>Capture Your Image</h2>
-        <div class="video-container">
-            <video id="video" autoplay></video>
-            <canvas id="canvas" width="240" height="180" style="display: none;"></canvas>
-        </div>
-        <div id="capture-success" class="capture-success">Image captured successfully!</div>
-        <button id="capture" class="btn btn-primary">Capture Image</button>
-        <form id="image-form" method="POST" action="{% url 'capture-image' course_id %}">
-            {% csrf_token %}
-            <input type="hidden" name="image_data" id="image-data">
-            <button type="submit" class="btn btn-success" disabled id="submit-button">Submit Image</button>
-        </form>
+  <div class="card">
+    <h2>Image Capture for Exam</h2>
+    <div class="video-container">
+      <video id="video" autoplay></video>
+      <canvas id="canvas" width="400" height="300" style="display: none;"></canvas>
     </div>
+    <div class="preview-box" id="preview-box">
+      <h3 class="text-lg font-bold text-gray-600 mb-2">Captured Image Preview</h3>
+      <img id="preview-image" src="#" alt="Captured Preview">
+    </div>
+    <button id="capture" class="btn btn-primary">Capture Image</button>
+    <form id="image-form" method="POST" action="{% url 'capture-image' course_id %}">
+      {% csrf_token %}
+      <input type="hidden" name="image_data" id="image-data">
+      <button type="submit" class="btn btn-success" disabled id="submit-button">Submit Image</button>
+    </form>
+    <div class="instructions">
+      <h3>Instructions:</h3>
+      <ul>
+        <li>Ensure you are in a well-lit environment.</li>
+        <li>Position yourself directly in front of the webcam.</li>
+        <li>Make sure only you are visible in the frame.</li>
+        <li>Click "Capture Image" when ready.</li>
+      </ul>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -127,17 +191,18 @@
   const context = canvas.getContext('2d');
   const captureButton = document.getElementById('capture');
   const imageDataInput = document.getElementById('image-data');
-  const captureSuccess = document.getElementById('capture-success');
+  const previewBox = document.getElementById('preview-box');
+  const previewImage = document.getElementById('preview-image');
   const submitButton = document.getElementById('submit-button');
 
   // Access the webcam
   navigator.mediaDevices.getUserMedia({ video: true })
-    .then(stream => {
+    .then((stream) => {
       video.srcObject = stream;
     })
-    .catch(err => {
-      console.error("Error accessing webcam: " + err);
-      alert("Unable to access webcam. Please check your browser settings.");
+    .catch((err) => {
+      console.error('Error accessing webcam: ' + err);
+      alert('Unable to access webcam. Please check your browser settings.');
     });
 
   // Capture the image from the video feed
@@ -146,13 +211,16 @@
     const imageData = canvas.toDataURL('image/png'); // Convert the image to base64 format
     imageDataInput.value = imageData; // Store the image data in a hidden input field
 
+    // Preview the captured image
+    previewImage.src = imageData;
+    previewBox.style.display = 'block';
+
     // Stop video stream after capture
     const stream = video.srcObject;
     const tracks = stream.getTracks();
-    tracks.forEach(track => track.stop());
+    tracks.forEach((track) => track.stop());
 
-    // Show capture success message and enable submit button
-    captureSuccess.classList.add('show');
+    // Enable submit button
     submitButton.disabled = false;
   });
 </script>

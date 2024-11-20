@@ -5,30 +5,115 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-    <link href="http://netdna.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
-    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
-    <style type="text/css">
-      a:link {
-        text-decoration: none;
-      }
-      .card {
-        box-shadow: 0 1px 2.94px 0.06px rgba(4, 26, 55, 0.16);
-        margin-bottom: 30px;
-        transition: all 0.3s ease-in-out;
-      }
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            margin-top: 50px;
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            margin-bottom: 30px;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .btn-info {
+            display: block;
+            margin: 0 auto 20px;
+            text-align: center;
+            font-size: 1rem;
+            padding: 10px 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 123, 255, 0.2);
+        }
+
+        .form-group label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        .form-control {
+            border-radius: 5px;
+            border: 1px solid #ced4da;
+            padding: 10px;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+            transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+
+        .form-control:focus {
+            border-color: #80bdff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+
+        .btn-success {
+            width: 100%;
+            padding: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 5px;
+        }
+
+        .file-upload-wrapper {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .file-upload-wrapper input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .file-upload-text {
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            padding: 10px;
+            color: #6c757d;
+            display: block;
+            text-align: center;
+            cursor: pointer;
+            font-weight: bold;
+            transition: color 0.3s ease-in-out, border-color 0.3s ease-in-out;
+        }
+
+        .file-upload-text:hover {
+            color: #0056b3;
+            border-color: #0056b3;
+        }
+
+        .file-upload-text.file-selected {
+            color: #28a745;
+            border-color: #28a745;
+        }
     </style>
 </head>
 
 <div class="container">
-    <h2 class="text-center">Upload Questions CSV</h2>
-    <a href="{% url 'download-questions-template' %}" class="btn btn-info" style="margin-bottom: 20px;">Download Questions Template</a>
-    <form method="POST" enctype="multipart/form-data" style="margin: 50px 0;">
+    <h2 class="text-center"><i class="fas fa-upload"></i> Upload Questions CSV</h2>
+    <a href="{% url 'download-questions-template' %}" class="btn btn-info">
+        <i class="fas fa-file-download"></i> Download Questions Template
+    </a>
+    <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="form-group">
             <label for="course">Select Course</label>
             <select name="courseID" class="form-control" required>
+                <option value="" disabled selected>-- Choose a Course --</option>
                 {% for course in courses %}
                 <option value="{{ course.id }}">{{ course.course_name }}</option>
                 {% endfor %}
@@ -36,10 +121,29 @@
         </div>
         <div class="form-group">
             <label for="csv_file">Upload CSV</label>
-            <input type="file" name="csv_file" class="form-control" accept=".csv" required>
+            <div class="file-upload-wrapper">
+                <input type="file" name="csv_file" id="csv_file" accept=".csv" required>
+                <span class="file-upload-text" id="file-upload-text">Choose CSV File</span>
+            </div>
         </div>
-        <button type="submit" class="btn btn-success">Upload Questions</button>
+        <button type="submit" class="btn btn-success">
+            <i class="fas fa-cloud-upload-alt"></i> Upload Questions
+        </button>
     </form>
 </div>
+
+<script>
+    $(document).ready(function () {
+        // Update file name on file select
+        $('#csv_file').on('change', function () {
+            let fileName = $(this).val().split('\\').pop();
+            if (fileName) {
+                $('#file-upload-text').text(fileName).addClass('file-selected');
+            } else {
+                $('#file-upload-text').text('Choose CSV File').removeClass('file-selected');
+            }
+        });
+    });
+</script>
 
 {% endblock content %}

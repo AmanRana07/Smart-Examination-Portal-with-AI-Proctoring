@@ -196,9 +196,13 @@
   <div class="sidebar">
     <center>
 
-      <img src="{% static "image/student.png" %}" class="profile_image" alt="">
+      {% if request.user.student.profile_pic %}
+      <img src="/static/{{ request.user.student.profile_pic.url }}" class="profile_image" alt="Profile Picture">
+    {% else %}
+      <img src="{% static 'image/student.png' %}" class="profile_image" alt="Default Profile Picture">
+    {% endif %}
       <h4>{{request.user.first_name}}</h4>
-      <h6 style="color: rgb(255, 255, 255);">( Student )</h6>
+      <h6 style="color: rgb(255, 255, 255);">Student</h6>
 
     </center>
 

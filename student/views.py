@@ -36,7 +36,6 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 
 
-
 # for showing signup/login button for student
 def studentclick_view(request):
     if request.user.is_authenticated:
@@ -82,6 +81,15 @@ from django.db.models import Count
 @user_passes_test(is_student)
 def student_dashboard_view(request):
     student = request.user.student
+    # Filter courses the student is registered for
+    enrolled_courses = StudentCourseEnrollment.objects.filter(
+        student=student
+    ).values_list("course", flat=True)
+    coursess = Course.objects.filter(id__in=enrolled_courses)
+    # Total questions based on enrolled courses
+    total_questionss = QMODEL.Question.objects.filter(
+        course__id__in=enrolled_courses
+    ).count()
 
     # Exam Performance Over Time
     results = Result.objects.filter(student=student).order_by("date")
@@ -151,8 +159,8 @@ def student_dashboard_view(request):
         "avg_course_names": avg_course_names,
         "avg_marks": avg_marks,
         "student_scores": student_scores,
-        "total_course": QMODEL.Course.objects.all().count(),
-        "total_question": QMODEL.Question.objects.all().count(),
+        "total_course": coursess.count(),
+        "total_question": total_questionss,
     }
 
     return render(request, "student/student_dashboard.html", context=context)
@@ -292,7 +300,14 @@ def calculate_marks_view(request):
 @login_required(login_url="studentlogin")
 @user_passes_test(is_student)
 def view_result_view(request):
-    courses = QMODEL.Course.objects.all()
+    # Get the logged-in student's courses through their enrollment
+    enrolled_courses = StudentCourseEnrollment.objects.filter(
+        student=request.user.student
+    ).values_list("course", flat=True)
+
+    # Retrieve only the courses the student has registered for
+    courses = QMODEL.Course.objects.filter(id__in=enrolled_courses)
+
     return render(request, "student/view_result.html", {"courses": courses})
 
 
@@ -743,24 +758,25 @@ def save_violation(request):
         return JsonResponse({"status": "success"})
     return JsonResponse({"status": "failed"}, status=400)
 
+
 def forgot_password2(request):
     if request.method == "POST":
-        email = request.POST.get('email')
-        
+        email = request.POST.get("email")
+
         # Check if the email exists in the user database
         try:
             user = User.objects.get(email=email)
         except User.DoesNotExist:
             messages.error(request, "Email address not found in our records.")
-            return render(request, 'student/forgot_password2.html')
-        
+            return render(request, "student/forgot_password2.html")
+
         # Generate a 6-digit OTP
         otp = random.randint(100000, 999999)
-        
+
         # Store OTP and email in the session for later verification
-        request.session['otp'] = otp
-        request.session['email'] = email
-        
+        request.session["otp"] = otp
+        request.session["email"] = email
+
         # Send OTP via email
         subject = "Reset Your Password - TestMate"
         message = (
@@ -772,9 +788,9 @@ def forgot_password2(request):
             "Thank you,\n"
             "Team TestMate"
         )
-        from_email = 'noinfo.testmate@gmail.com'  # Your sender email
+        from_email = "noinfo.testmate@gmail.com"  # Your sender email
         recipient_list = [email]
-        
+
         try:
             send_mail(
                 subject,
@@ -782,41 +798,46 @@ def forgot_password2(request):
                 from_email,
                 recipient_list,
             )
-            messages.success(request, "An OTP has been sent to your email. Please check your inbox.")
-            return redirect('verify_otp2')  # Redirect to OTP verification page
+            messages.success(
+                request, "An OTP has been sent to your email. Please check your inbox."
+            )
+            return redirect("verify_otp2")  # Redirect to OTP verification page
         except Exception as e:
             # Handle potential email sending failure
-            messages.error(request, f"Failed to send OTP. Please try again later. Error: {str(e)}")
-    
-    return render(request, 'student/forgot_password2.html')
+            messages.error(
+                request, f"Failed to send OTP. Please try again later. Error: {str(e)}"
+            )
+
+    return render(request, "student/forgot_password2.html")
+
+
 def verify_otp2(request):
     if request.method == "POST":
-        otp = "".join([
-            request.POST.get(f"otp_{i}") for i in range(1, 7)
-        ])  # Concatenate inputs
-        if otp.isdigit() and int(otp) == request.session.get('otp'):
+        otp = "".join(
+            [request.POST.get(f"otp_{i}") for i in range(1, 7)]
+        )  # Concatenate inputs
+        if otp.isdigit() and int(otp) == request.session.get("otp"):
             messages.success(request, "OTP verified! You can now reset your password.")
-            return redirect('reset_password2')
+            return redirect("reset_password2")
         else:
             messages.error(request, "Invalid OTP. Please try again.")
-    return render(request, 'student/verify_otp2.html')
+    return render(request, "student/verify_otp2.html")
 
 
 from django.contrib.auth.models import User
 
+
 def reset_password2(request):
     if request.method == "POST":
-        new_password = request.POST.get('new_password')
-        confirm_password = request.POST.get('confirm_password')
+        new_password = request.POST.get("new_password")
+        confirm_password = request.POST.get("confirm_password")
         if new_password == confirm_password:
-            email = request.session.get('email')
+            email = request.session.get("email")
             user = User.objects.get(email=email)
             user.set_password(new_password)
             user.save()
             messages.success(request, "Password reset successful. You can now log in.")
-            return redirect('studentlogin')  # Adjust as per your login page URL
+            return redirect("studentlogin")  # Adjust as per your login page URL
         else:
             messages.error(request, "Passwords do not match.")
-    return render(request, 'student/reset_password2.html')
-
-
+    return render(request, "student/reset_password2.html")

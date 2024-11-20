@@ -7,67 +7,180 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <style>
-        a:link {
-            text-decoration: none;
+        body {
+            background-color: #f9f9f9;
+            font-family: Arial, sans-serif;
         }
+
+        h2 {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 2.5em;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .container {
+            margin: 50px auto;
+            max-width: 100%;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .table {
+            margin-top: 20px;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        .table thead {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .table thead th {
+            text-align: center;
+            padding: 15px;
+        }
+
+        .table tbody td {
+            text-align: center;
+            padding: 15px;
+            vertical-align: middle;
+        }
+
+        .table tbody tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .table tbody tr:hover {
+            background-color: #eaf4ff;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            font-size: 1em;
+            border-radius: 5px;
+        }
+
+        .btn-warning {
+            background-color: #f39c12;
+            color: white;
+            border: none;
+        }
+
+        .btn-warning:hover {
+            background-color: #e67e22;
+        }
+
+        .btn-danger {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
         .popup {
-  visibility: hidden;
-  background-color: #333;
-  color: #fff;
-  text-align: center;
-  border-radius: 8px;
-  padding: 8px 12px;
-  position: absolute;
-  bottom: 140%; /* Position above the text */
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1;
-  opacity: 0;
-  font-size: 0.85em;
-  transition: opacity 0.4s ease, transform 0.4s ease;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
-}
+            visibility: hidden;
+            background-color: #333;
+            color: white;
+            text-align: center;
+            border-radius: 8px;
+            padding: 10px;
+            position: absolute;
+            bottom: 140%; /* Position above the text */
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1;
+            opacity: 0;
+            font-size: 0.85em;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
+        }
 
-.popup::after {
-  content: '';
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  border-width: 8px;
-  border-style: solid;
-  border-color: #333 transparent transparent transparent;
-}
+        .popup::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 8px;
+            border-style: solid;
+            border-color: #333 transparent transparent transparent;
+        }
 
-.copy-course:hover .popup {
-  visibility: visible;
-  opacity: 1;
-  transform: translate(-50%, -10px); /* Small upward movement for the animation */
-}
+        .copy-course:hover .popup {
+            visibility: visible;
+            opacity: 1;
+            transform: translate(-50%, -10px); /* Small upward movement for the animation */
+        }
 
-.copy-course {
-  cursor: pointer;
-  color: #3498db;
-  position: relative;
-  font-weight: bold;
-  text-decoration: underline;
-  transition: color 0.2s ease;
-}
+        .copy-course {
+            cursor: pointer;
+            color: #3498db;
+            position: relative;
+            font-weight: bold;
+            text-decoration: underline;
+            transition: color 0.2s ease;
+        }
 
-.copy-course:hover {
-  color: #1e6eb9;
-}
+        .copy-course:hover {
+            color: #1e6eb9;
+        }
+
+        .no-courses {
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #888;
+        }
+        .page-header {
+        text-align: center;
+        font-size: 2.5em;
+        color: #3498db;
+        font-weight: bold;
+        margin-top: 20px;
+        padding-bottom: 10px;
+        position: relative;
+        display: inline-block;
+        padding: 15px 30px;
+        background: linear-gradient(135deg, #eaf4ff, #ffffff);
+        border-radius: 8px;
+        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .page-header:before, .page-header:after {
+        content: "";
+        position: absolute;
+        height: 3px;
+        width: 40px;
+        background-color: #3498db;
+        bottom: 0;
+    }
+
+    .page-header:before {
+        left: 10%;
+    }
+
+    .page-header:after {
+        right: 10%;
+    }
     </style>
 </head>
 
-<h2 style="text-align:center;">View Courses</h2>
+<h2>View Courses</h2>
 
-<div class="container" style="margin: 50px 0;">
+<div class="container">
     <table class="table table-bordered table-striped">
         <thead>
             <tr>
                 <th>Course Name</th>
-                <!-- <th>Created By</th> New column for creator -->
                 <th>Total Questions</th>
                 <th>Total Marks</th>
                 <th>Course Code</th>
@@ -79,40 +192,44 @@
             {% for course in courses %}
             <tr>
                 <td>{{ course.course_name }}</td>
-                <!-- <td>{{ course.creator.username }}</td> Display creator's name -->
                 <td>{{ course.question_number }}</td>
                 <td>{{ course.total_marks }}</td>
-                <td class="copy-course" onclick="copyCourseCode('{{ course.course_code }}')">{{ course.course_code }}<span class="popup" id="popupMessage">Course code copied!</span></td>
+                <td class="copy-course" onclick="copyCourseCode('{{ course.course_code }}')">
+                    {{ course.course_code }}
+                    <span class="popup" id="popupMessage">Course code copied!</span>
+                </td>
                 <td>{{ course.duration_minutes }}</td>
                 <td>
-                    <a href="{% url 'edit-exam-course' course.id %}" class="btn btn-warning" style="border-radius:0px;">Edit</a>
-                    <a href="{% url 'delete-exam' course.id %}" class="btn btn-danger" style="border-radius:0px;"
-                        onclick="return confirm('Are you sure you want to delete this course?');">Delete</a>
+                    <a href="{% url 'edit-exam-course' course.id %}" class="btn btn-warning">Edit</a>
+                    <a href="{% url 'delete-exam' course.id %}" class="btn btn-danger" 
+                       onclick="return confirm('Are you sure you want to delete this course?');">Delete</a>
                 </td>
-                <td><p><a href="{% url 'course_sessions_view' course.id %}">View Active Sessions for {{ course.course_name }}</a></p>
+                <td>
+                    <a href="{% url 'course_sessions_view' course.id %}" style="color: #3498db;">View Active Sessions</a>
                 </td>
             </tr>
             {% empty %}
             <tr>
-                <td colspan="6" style="text-align:center;">No courses available</td>
+                <td colspan="7" class="no-courses">No courses available</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
+
 <script>
     function copyCourseCode(courseCode) {
-      navigator.clipboard.writeText(courseCode).then(() => {
-        const popup = document.getElementById('popupMessage');
-        popup.style.visibility = 'visible';
-        popup.style.opacity = '1';
-  
-        setTimeout(() => {
-          popup.style.visibility = 'hidden';
-          popup.style.opacity = '0';
-        }, 2000); // Hide popup after 2 seconds
-      });
+        navigator.clipboard.writeText(courseCode).then(() => {
+            const popup = document.getElementById('popupMessage');
+            popup.style.visibility = 'visible';
+            popup.style.opacity = '1';
+
+            setTimeout(() => {
+                popup.style.visibility = 'hidden';
+                popup.style.opacity = '0';
+            }, 2000); // Hide popup after 2 seconds
+        });
     }
-  </script>
+</script>
 
 {% endblock content %}
